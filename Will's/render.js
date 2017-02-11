@@ -101,7 +101,11 @@ function createObject() {
 
 			break;
 		case 3:
-
+			let llSphereRadius = document.getElementById("lat-long-sphere-radius").valueAsNumber;
+			let longitudes = document.getElementById("lat-long-sphere-longitudes").valueAsNumber;
+			let latitudes = document.getElementById("lat-long-sphere-latitudes").valueAsNumber;
+			console.log("Lat/Long Sphere radius: " +llSphereRadius+ " longitudes: " +longitudes+ " latitudes: " +latitudes);
+			obj = new LLSphere(gl, llSphereRadius, longitudes, latitudes);
 			break;
 		case 4:
 
