@@ -9,6 +9,7 @@
     <script src="Cone.js"></script>
     <script src="TruncatedCone.js"></script>
     <script src="LLSphere.js"></script>
+    <script src="RecursiveSphere.js"></script>
     <script src="render.js"></script>
     <style>
         #controls {
@@ -59,14 +60,19 @@
         <!-- TODO: add your input tags here -->
     </div>
     <div class="param-group" hidden>
-        Sphere parameters:
-        <li>radius 0.1 <input id="lat-long-sphere-radius" type="range" min="0.1" max="0.45" step=".05" value=".3"> 0.45</li>
-        <li>longitudes 2 <input id="lat-long-sphere-longitudes" type="range" min="2" max="20" step="1" value="15"> 20 &nbsp;&nbsp; Note: One longitude makes a complete rotation around the sphere.</li>
-        <li>latitudes 2 <input id="lat-long-sphere-latitudes" type="range" min="2" max="5" step="1" value="2"> 5 &nbsp;&nbsp; Note: The number of latitudes is from the equator to a pole, including the equator. So 2 latitudes makes an equator, plus 1 latitude above and below the equator</li>
+        Lat/Long Sphere parameters:
+        <ul>
+            <li>radius 0.1 <input id="lat-long-sphere-radius" type="range" min="0.1" max="0.45" step=".05" value=".3"> 0.45</li>
+            <li>longitudes 2 <input id="lat-long-sphere-longitudes" type="range" min="2" max="20" step="1" value="15"> 20 &nbsp;&nbsp; Note: One longitude makes a complete rotation around the sphere.</li>
+            <li>latitudes 2 <input id="lat-long-sphere-latitudes" type="range" min="2" max="5" step="1" value="2"> 5 &nbsp;&nbsp; Note: The number of latitudes is from the equator to a pole, including the equator. So 2 latitudes makes an equator, plus 1 latitude above and below the equator</li>
+            </ul>
     </div>
     <div class="param-group" hidden>
         Recursive Sphere parameters:
-        <!-- TODO: add your input tags here -->
+        <ul>
+            <li>radius 0.1 <input id="sphere-radius" type="range" min="0.1" max="0.9" step="0.05" value="0.5"> 0.9</li>
+            <li>recursive calls 1 <input id="sphere-recursive-calls" type="range" min="1" max="10" step="1" value="5"> 10</li>
+        </ul>
     </div>
     <div class="param-group" hidden>
         Torus parameters:

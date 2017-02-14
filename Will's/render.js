@@ -108,7 +108,10 @@ function createObject() {
 			obj = new LLSphere(gl, llSphereRadius, longitudes, latitudes);
 			break;
 		case 4:
-
+			let rSphereRadius = document.getElementById("sphere-radius").valueAsNumber;
+			let depth = document.getElementById("sphere-recursive-calls").valueAsNumber;
+			console.log("Recursive Sphere radius: " +rSphereRadius+ "recursive depth: " +depth);
+			obj = new RecursiveSphere(gl, rSphereRadius, depth);
 			break;
 		case 5:
 
