@@ -75,13 +75,15 @@
   </div>
   <div class="param-group" hidden>
     Torus parameters:
-    <li>Large radius 0.2 <input id="torus-large-radius" type="range" min="0.2" max="0.8" step="0.05" value="0.3"> 0.8</li>
+    <li>Large radius 0.2 <input id="torus-large-radius" type="range" min="0.2" max="0.8" step="0.05" value="0.3"> 0.8 &nbsp; Large radius should be bigger than small radius</li>
     <li>Small radius 0.2 <input id="torus-small-radius" type="range" min="0.2" max="0.8" step="0.05" value="0.3">0.8</li>
+    <li>sub division 30 <input id="torus-subdiv" type="range" min="30" max="30" step="1" value="30">30</li>
+    <li>vertical sub division: 30 <input id="torus-vsubdiv" type="range" min="30" max="40" step="1" value="30"> 40</li>
   </div>
   <div class="param-group" hidden>
     Ring parameters:
     <li>height 0.2 <input id="ring-height" type="range" min="0.2" max="0.9" step="0.05" value="0.5"> 0.9</li>
-    <li>Outer radius 0.2 <input id="ring-outer-radius" type="range" min="0.2" max="0.8" step="0.05" value="0.3"> 0.8</li>
+    <li>Outer radius 0.2 <input id="ring-outer-radius" type="range" min="0.2" max="0.8" step="0.05" value="0.3"> 0.8 &nbsp; Outer radius should be bigger than inner radius</li>
     <li>Inner radius 0.2 <input id="ring-inner-radius" type="range" min="0.2" max="0.8" step="0.05" value="0.3">0.8</li>
     <li>sub division 6 <input id="ring-subdiv" type="range" min="6" max="28" step="1" value="12"> 30</li>
   </div>

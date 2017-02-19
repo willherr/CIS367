@@ -41,8 +41,9 @@ function main() {
             gl.clearColor (0, 0, 0, 1);
             gl.enable(gl.CULL_FACE);
             gl.cullFace(gl.BACK);
+            gl.enable(gl.DEPTH_TEST);
 
-          /* the vertex shader defines TWO attribute vars and ONE uniform var */
+            /* the vertex shader defines TWO attribute vars and ONE uniform var */
             posAttr = gl.getAttribLocation (prog, "vertexPos");
             colAttr = gl.getAttribLocation (prog, "vertexCol");
             modelUnif = gl.getUniformLocation (prog, "modelCF");
@@ -117,9 +118,11 @@ function createObject() {
         case 4:
             let TorusLargeRadius = document.getElementById("torus-large-radius").valueAsNumber;
             let TorusSmallRadius = document.getElementById("torus-small-radius").valueAsNumber;
+            let TorusSubDiv = document.getElementById("torus-subdiv").valueAsNumber;
+            let TorusVSubDiv = document.getElementById("torus-vsubdiv").valueAsNumber;
             console.log("Torus Large-radius: " + TorusLargeRadius + " small-radius: "
-                + TorusSmallRadius);
-            obj = new Torus(gl, TorusLargeRadius, TorusSmallRadius);
+                + TorusSmallRadius + "subdiv" + TorusSubDiv + "vsubdiv" + TorusVSubDiv);
+            obj = new Torus(gl, TorusLargeRadius, TorusSmallRadius, TorusSubDiv, TorusVSubDiv);
             break;
             break;
         case 5:

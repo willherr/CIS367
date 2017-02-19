@@ -16,7 +16,7 @@ class CylindricalRing {
 
         //Draw outer circle then draw inner circle.  Connect those two using triangle strip
         //(say 8 points for each circle) --> (0,8,1,9,2,10,11,12......)
-        
+
         /* if colors are undefined, generate random colors */
         let col1Undefined, col2Undefined = false;
         if (typeof col1 === "undefined"){ col1 = vec3.fromValues(Math.random(), Math.random(), Math.random());
@@ -40,7 +40,7 @@ class CylindricalRing {
             let angle = k * 2 * Math.PI / subDiv;
             let x = outerRadius * Math.cos (angle);
             let y = outerRadius * Math.sin (angle);
-
+            
             /* the first three floats are 3D (x,y,z) position */
             vertices.push (x, y, 0); /* perimeter of base */
             vec3.lerp (randColor, col1, col2, Math.random()); /* linear interpolation between two colors */
