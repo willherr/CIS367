@@ -23,7 +23,7 @@ function main() {
     glCanvas = document.getElementById("gl-canvas");
     textOut = document.getElementById("msg");
     gl = WebGLUtils.setupWebGL(glCanvas, null);
-    axisBuff = gl.createBuffer()
+    axisBuff = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, axisBuff);
     window.addEventListener("resize", resizeHandler, false);
     window.addEventListener("keypress", keyboardHandler, false);

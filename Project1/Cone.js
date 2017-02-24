@@ -1,6 +1,3 @@
-/**
- * Created by Hans Dulimarta on 2/1/17.
- */
 class Cone {
     /**
      * Create a 3D cone with tip at the Z+ axis and base on the XY plane
@@ -14,7 +11,7 @@ class Cone {
      */
     constructor (gl, radius, height, subDiv, vSubDiv, col1, col2) {
 
-      /* if colors are undefined, generate random colors */
+        /* if colors are undefined, generate random colors */
         let col1Undefined, col2Undefined = false;
         if (typeof col1 === "undefined"){ col1 = vec3.fromValues(Math.random(), Math.random(), Math.random());
             col1Undefined = true;}
@@ -24,10 +21,10 @@ class Cone {
         let vertices = [];
         this.vbuff = gl.createBuffer();
 
-      /* Instead of allocating two separate JS arrays (one for position and one for color),
-       in the following loop we pack both position and color
-       so each tuple (x,y,z,r,g,b) describes the properties of a vertex
-       */
+        /* Instead of allocating two separate JS arrays (one for position and one for color),
+         in the following loop we pack both position and color
+         so each tuple (x,y,z,r,g,b) describes the properties of a vertex
+         */
         vertices.push(0,0,height); /* tip of cone */
         vec3.lerp (randColor, col1, col2, Math.random()); /* linear interpolation between two colors */
         vertices.push(randColor[0], randColor[1], randColor[2]);
@@ -36,10 +33,10 @@ class Cone {
             let x = radius * Math.cos (angle);
             let y = radius * Math.sin (angle);
 
-          /* the first three floats are 3D (x,y,z) position */
+            /* the first three floats are 3D (x,y,z) position */
             vertices.push (x, y, 0); /* perimeter of base */
             vec3.lerp (randColor, col1, col2, Math.random()); /* linear interpolation between two colors */
-          /* the next three floats are RGB */
+            /* the next three floats are RGB */
             vertices.push(randColor[0], randColor[1], randColor[2]);
         }
         vertices.push (0,0,0); /* center of base */
@@ -51,19 +48,18 @@ class Cone {
         let subDivHeight = 0;
         for(let i = 0; i < vSubDiv - 1; i++){
             subDivHeight += height/vSubDiv;
-          for(let j = 0; j < subDiv; j++){
-            subDivRadius = (1 - ((i+1) / vSubDiv)) * radius;
-            let angle = j * 2 * Math.PI / subDiv;
-            let x = subDivRadius * Math.cos (angle);
-            let y = subDivRadius * Math.sin (angle);
+            for(let j = 0; j < subDiv; j++){
+                subDivRadius = (1 - ((i+1) / vSubDiv)) * radius;
+                let angle = j * 2 * Math.PI / subDiv;
+                let x = subDivRadius * Math.cos (angle);
+                let y = subDivRadius * Math.sin (angle);
 
-            vertices.push(x, y, subDivHeight);
+                vertices.push(x, y, subDivHeight);
 
+                vec3.lerp(randColor, col1, col2, Math.random());
+                vertices.push(randColor[0], randColor[1], randColor[2]);
 
-            vec3.lerp(randColor, col1, col2, Math.random());
-            vertices.push(randColor[0], randColor[1], randColor[2]);
-
-          }
+            }
             if (col1Undefined) col1 = vec3.fromValues(Math.random(), Math.random(), Math.random());
             if (col2Undefined) col2 = vec3.fromValues(Math.random(), Math.random(), Math.random());
             randColor = vec3.create();
@@ -94,20 +90,20 @@ class Cone {
 
         for(let i = 0; i < vSubDiv - 1; i++){          // loop number of vertical subdivisions - top
             tempIndex = [];
-          for(let j = i*subDiv + 1; j < i*subDiv + subDiv + 1; j++){// loop number of circle subdivisions
-              let c = 1;
-              let d = 0;
-              let e = 0;
-              let f = 0;
-              if(i != 0) {
-                  d = -1;
-                  e = 1;
-                  f = 2;
-              }
-              tempIndex.push(j + subDiv + c); tempIndex.push(j+e);
-              lastVertex = j + c + 1;
-              firstVertex = i*subDiv + 1 + d + f;
-          }
+            for(let j = i*subDiv + 1; j < i*subDiv + subDiv + 1; j++){// loop number of circle subdivisions
+                let c = 1;
+                let d = 0;
+                let e = 0;
+                let f = 0;
+                if(i != 0) {
+                    d = -1;
+                    e = 1;
+                    f = 2;
+                }
+                tempIndex.push(j + subDiv + c); tempIndex.push(j+e);
+                lastVertex = j + c + 1;
+                firstVertex = i*subDiv + 1 + d + f;
+            }
             tempIndex.push(lastVertex);
             tempIndex.push(firstVertex);
             vSubDivBufferHolder[i] = gl.createBuffer();
@@ -128,8 +124,8 @@ class Cone {
 
 
 
-      /* Put the indices as an array of objects. Each object has three attributes:
-       primitive, buffer, and numPoints */
+        /* Put the indices as an array of objects. Each object has three attributes:
+         primitive, buffer, and numPoints */
         this.indices = [{"primitive": gl.TRIANGLE_FAN, "buffer": this.topIdxBuff, "numPoints": topIndex.length},
             {"primitive": gl.TRIANGLE_FAN, "buffer": this.botIdxBuff, "numPoints": botIndex.length},
             {"vSubDivBufferHolder": vSubDivBufferHolder, "numPoints": 2 * (subDiv + 1)}];
@@ -143,14 +139,14 @@ class Cone {
      * @param {mat4} coordFrame a JS mat4 variable that holds the actual coordinate frame of the object
      */
     draw(vertexAttr, colorAttr, modelUniform, coordFrame) {
-      /* copy the coordinate frame matrix to the uniform memory in shader */
+        /* copy the coordinate frame matrix to the uniform memory in shader */
         gl.uniformMatrix4fv(modelUniform, false, coordFrame);
 
-      /* binder the (vertex+color) buffer */
+        /* binder the (vertex+color) buffer */
         gl.bindBuffer(gl.ARRAY_BUFFER, this.vbuff);
 
-      /* with the "packed layout"  (x,y,z,r,g,b),
-       the stride distance between one group to the next is 24 bytes */
+        /* with the "packed layout"  (x,y,z,r,g,b),
+         the stride distance between one group to the next is 24 bytes */
         gl.vertexAttribPointer(vertexAttr, 3, gl.FLOAT, false, 24, 0); /* (x,y,z) begins at offset 0 */
         gl.vertexAttribPointer(colorAttr, 3, gl.FLOAT, false, 24, 12); /* (r,g,b) begins at offset 12 */
 

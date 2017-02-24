@@ -42,7 +42,7 @@ function main() {
             gl.enable(gl.CULL_FACE);
             gl.cullFace(gl.BACK);
             gl.enable(gl.DEPTH_TEST);
-
+            
             /* the vertex shader defines TWO attribute vars and ONE uniform var */
             posAttr = gl.getAttribLocation (prog, "vertexPos");
             colAttr = gl.getAttribLocation (prog, "vertexCol");
