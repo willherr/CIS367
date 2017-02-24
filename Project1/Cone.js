@@ -17,7 +17,7 @@ class Cone {
             col1Undefined = true;}
         if (typeof col2 === "undefined"){ col2 = vec3.fromValues(Math.random(), Math.random(), Math.random());
             col2Undefined = true;}
-        let randColor = vec3.create();
+        //let randColor = vec3.create();
         let vertices = [];
         this.vbuff = gl.createBuffer();
 
@@ -26,8 +26,8 @@ class Cone {
          so each tuple (x,y,z,r,g,b) describes the properties of a vertex
          */
         vertices.push(0,0,height); /* tip of cone */
-        vec3.lerp (randColor, col1, col2, Math.random()); /* linear interpolation between two colors */
-        vertices.push(randColor[0], randColor[1], randColor[2]);
+        //vec3.lerp (randColor, col1, col2, Math.random()); /* linear interpolation between two colors */
+        vertices.push(255, 255, 255);
         for (let k = 0; k < subDiv; k++) {
             let angle = k * 2 * Math.PI / subDiv;
             let x = radius * Math.cos (angle);
@@ -35,13 +35,13 @@ class Cone {
 
             /* the first three floats are 3D (x,y,z) position */
             vertices.push (x, y, 0); /* perimeter of base */
-            vec3.lerp (randColor, col1, col2, Math.random()); /* linear interpolation between two colors */
+            //vec3.lerp (randColor, col1, col2, Math.random()); /* linear interpolation between two colors */
             /* the next three floats are RGB */
-            vertices.push(randColor[0], randColor[1], randColor[2]);
+            vertices.push(255, 255, 255);
         }
         vertices.push (0,0,0); /* center of base */
-        vec3.lerp (randColor, col1, col2, Math.random()); /* linear interpolation between two colors */
-        vertices.push(randColor[0], randColor[1], randColor[2]);
+        //vec3.lerp (randColor, col1, col2, Math.random()); /* linear interpolation between two colors */
+        vertices.push(255, 255, 255);
 
         /***** Above this we have bottom, center of bottom, and tip created. */
         let subDivRadius = 0;
@@ -56,13 +56,13 @@ class Cone {
 
                 vertices.push(x, y, subDivHeight);
 
-                vec3.lerp(randColor, col1, col2, Math.random());
-                vertices.push(randColor[0], randColor[1], randColor[2]);
+                //vec3.lerp(randColor, col1, col2, Math.random());
+                vertices.push(255, 255, 255);
 
             }
             if (col1Undefined) col1 = vec3.fromValues(Math.random(), Math.random(), Math.random());
             if (col2Undefined) col2 = vec3.fromValues(Math.random(), Math.random(), Math.random());
-            randColor = vec3.create();
+            //randColor = vec3.create();
         }
 
 
