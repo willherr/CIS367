@@ -45,18 +45,20 @@ function main() {
             orthoProjMat = mat4.create();
             persProjMat = mat4.create();
             viewMat = mat4.create();
-            topViewMat = mat4.create();
+            //topViewMat = mat4.create();
             ringCF = mat4.create();
             tmpMat = mat4.create();
             mat4.lookAt(viewMat,
                 vec3.fromValues(2, 2, 2), /* eye */
                 vec3.fromValues(0, 0, 0), /* focal point */
                 vec3.fromValues(0, 0, 1)); /* up */
+            /*
             mat4.lookAt(topViewMat,
                 vec3.fromValues(0,0,2),
                 vec3.fromValues(0,0,0),
                 vec3.fromValues(0,1,0)
             );
+            */
             gl.uniformMatrix4fv(modelUnif, false, ringCF);
 
             /*Create object*/
@@ -123,7 +125,7 @@ function keyboardHandler(event) {
 function render() {
     gl.clear(gl.DEPTH_BUFFER_BIT | gl.COLOR_BUFFER_BIT);
     draw3D();
-    drawTopView(); /* looking at the XY plane, Z-axis points towards the viewer */
+    //drawTopView(); /* looking at the XY plane, Z-axis points towards the viewer */
     // coneSpinAngle += 1;  /* add 1 degree */
     requestAnimationFrame(render);
 }
@@ -133,10 +135,12 @@ function drawScene() {
 
     if (typeof obj !== 'undefined') {
         var yPos = -0.25;
-        for (let k = 0; k < 1; k++) {
-            mat4.fromTranslation(tmpMat, vec3.fromValues(0, yPos, 0));
+        var xPos = -0.25;
+        for (let k = 0; k < 2; k++) {
+            mat4.fromTranslation(tmpMat, vec3.fromValues(xPos, yPos, 0));
             mat4.multiply(tmpMat, ringCF, tmpMat);   // tmp = ringCF * tmpMat
             obj.draw(posAttr, colAttr, modelUnif, tmpMat);
+            xPos += 1.0;
         }
     }
 }
@@ -152,7 +156,7 @@ function draw3D() {
 function drawTopView() {
     /* We must update the projection and view matrices in the shader */
     gl.uniformMatrix4fv(projUnif, false, orthoProjMat);
-    gl.uniformMatrix4fv(viewUnif, false, topViewMat);
+    //gl.uniformMatrix4fv(viewUnif, false, topViewMat);
     gl.viewport(glCanvas.width/2, 0, glCanvas.width/2, glCanvas.height);
     drawScene();
 }
