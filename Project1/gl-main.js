@@ -134,13 +134,12 @@ function drawScene() {
     globalAxes.draw(posAttr, colAttr, modelUnif, IDENTITY);
 
     if (typeof obj !== 'undefined') {
-        var yPos = -0.25;
-        var xPos = -0.25;
-        for (let k = 0; k < 2; k++) {
+        var yPos = -0.5;
+        var xPos = 0.2;
+        for (let k = 0; k < 1; k++) {
             mat4.fromTranslation(tmpMat, vec3.fromValues(xPos, yPos, 0));
             mat4.multiply(tmpMat, ringCF, tmpMat);   // tmp = ringCF * tmpMat
             obj.draw(posAttr, colAttr, modelUnif, tmpMat);
-            xPos += 1.0;
         }
     }
 }
