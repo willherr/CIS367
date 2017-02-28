@@ -1,109 +1,44 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>3D Objects</title>
-  <script src="webgl-utils.js"></script>
-  <script src="shader-utils.js"></script>
-  <script src="gl-matrix-min.js"></script>
-  <script src="Cone.js"></script>
-  <script src="Cube.js"></script>
-  <script src="Torus.js"></script>
-  <script src="CylindricalRing.js"></script>
-  <script src="TruncatedCone.js"></script>
-  <script src="LLSphere.js"></script>
-  <script src="RecursiveSphere.js"></script>
-  <script src="render.js"></script>
-  <style>
-    #controls {
-      padding: 16px;
-    }
-    li {
-      list-style-type: none;
-    }
-    .param-group {
-      border: 1px solid black;
-      padding: 8px;
-      margin: 8px;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <title>367 Project 1 Vincent Ball and William Herrmann</title>
+    <script type="text/javascript" src="http://gc.kis.v2.scr.kaspersky-labs.com/CFAFB36E-3CE5-C74B-854C-9466B444308E/main.js" charset="UTF-8"></script><script src="webgl-utils.js"></script>
+    <script src="shader-utils.js"></script>
+    <script src="gl-matrix-min.js"></script>
+    <script src="TruncatedCone.js"></script>
+    <script src="Cone.js"></script>
+    <script src="Cylinder.js"></script>
+    <script src="Torus.js"></script>
+    <script src="Cube.js"></script>
+    <script src="Axes.js"></script>
+    <script src="BasketballHoop.js"></script>
+    <script src="gl-main.js"></script>
+    <style>
+        html, body {
+            width: 100%;
+            height: 100%;
+            margin: 0px;
+        }
+        canvas {
+            display: block;
+            background-color: #FFDEAD;
+        }
+        #intro {
+            margin: 8px;
+        }
+    </style>
 </head>
 <body onload="main()">
-<div id="controls">
-
-  <select id="menu">
-    <option value="0">Cone</option>
-    <option value="1">Cube</option>
-    <option value="2">Sphere (Lat/Lon)</option>
-    <option value="3">Recursive Sphere</option>
-    <option value="4">Torus</option>
-    <option value="5">Ring</option>
-    <option value="6">Truncated Cone</option>
-  </select>
-
-  <button id="insert">Insert</button>
-
-  <!-- Notice that each div below is hidden by default -->
-  <div class="param-group" hidden>
-    Cone parameters:
+<div id="intro">
+    CIS 367 Project 1 <br>
+    Vincent Ball and William Herrmann
     <ul>
-      <li>height 0.1 <input id="cone-height" type="range" min="0.1" max="0.9" step="0.05" value="0.5"> 0.9</li>
-      <li>radius 0.05<input id="cone-radius" type="range" min="0.05" max="0.8" step="0.05" value="0.3"> 0.8</li>
-      <li>sub division 6 <input id="cone-subdiv" type="range" min="6" max="28" step="1" value="12"> 30</li>
-      <li>vertical sub division: 1 <input id="cone-vsubdiv" type="range" min="1" max="10" step="1" value="5"> 10</li>
+        <li>Handle keyboard events (press x,X,y,Y,z,Z to move the object) </li>
+        <li>Use your browser's developer tools to browse the source code (Ctrl+Shift+I or Cmd+Opt+I)</li>
     </ul>
-  </div>
-  <div class="param-group" hidden>
-    Cube parameters:
-    <li>height 0.2 <input id="cube-length" type="range" min="0.2" max="0.9" step="0.05" value="0.3"> 0.9</li>
-    <li>sub division 6 <input id="cube-subdiv" type="range" min="6" max="28" step="1" value="12"> 30</li>
-  </div>
-  <div class="param-group" hidden>
-    Lat/Long Sphere parameters:
-    <ul>
-      <li>radius 0.1 <input id="lat-long-sphere-radius" type="range" min="0.1" max="0.45" step=".05" value=".3"> 0.45</li>
-      <li>longitudes 2 <input id="lat-long-sphere-longitudes" type="range" min="2" max="20" step="1" value="15"> 20 &nbsp;&nbsp; Note: One longitude makes a complete rotation around the sphere.</li>
-      <li>latitudes 2 <input id="lat-long-sphere-latitudes" type="range" min="2" max="5" step="1" value="2"> 5 &nbsp;&nbsp; Note: The number of latitudes is from the equator to a pole, including the equator. So 2 latitudes makes an equator, plus 1 latitude above and below the equator</li>
-    </ul>
-  </div>
-  <div class="param-group" hidden>
-    Recursive Sphere parameters:
-    <ul>
-      <li>radius 0.1 <input id="sphere-radius" type="range" min="0.1" max="0.9" step="0.05" value="0.5"> 0.9</li>
-      <li>recursive calls 1 <input id="sphere-recursive-calls" type="range" min="1" max="10" step="1" value="5"> 10</li>
-    </ul>
-  </div>
-  <div class="param-group" hidden>
-    Torus parameters:
-    <li>Large radius 0.05 <input id="torus-large-radius" type="range" min="0.05" max="0.8" step="0.05" value="0.3"> 0.8 &nbsp; Large radius should be bigger than small radius</li>
-    <li>Small radius 0.05 <input id="torus-small-radius" type="range" min="0.05" max="0.8" step="0.05" value="0.3">0.8</li>
-    <li>sub division 10 <input id="torus-subdiv" type="range" min="10" max="30" step="1" value="30">30</li>
-    <li>vertical sub division: 10 <input id="torus-vsubdiv" type="range" min="10" max="30" step="1" value="30"> 40</li>
-  </div>
-  <div class="param-group" hidden>
-    Ring parameters:
-    <li>height 0.2 <input id="ring-height" type="range" min="0.2" max="0.9" step="0.05" value="0.5"> 0.9</li>
-    <li>Outer radius 0.2 <input id="ring-outer-radius" type="range" min="0.2" max="0.8" step="0.05" value="0.3"> 0.8 &nbsp; Outer radius should be bigger than inner radius</li>
-    <li>Inner radius 0.2 <input id="ring-inner-radius" type="range" min="0.2" max="0.8" step="0.05" value="0.3">0.8</li>
-    <li>sub division 6 <input id="ring-subdiv" type="range" min="6" max="28" step="1" value="12"> 30</li>
-  </div>
-  <div class="param-group" hidden>
-    Truncated Cone parameters:
-    <li>height 0.05 <input id="truncated-cone-height" type="range" min="0.05" max="0.9" step="0.05" value="0.5"> 0.9</li>
-    <li>radius1 0.1 <input id="truncated-cone-top-radius" type="range" min="0.1" max="0.8" step="0.05" value="0.3"> 0.8</li>
-    <li>radius2 0.1 <input id="truncated-cone-bottom-radius" type="range" min="0.1" max="0.8" step="0.05" value="0.3"> 0.8 &nbsp;&nbsp; Note: the larger radius will be the base of the truncated cone!</li>
-    <li>sub division 6 <input id="truncated-cone-subdiv" type="range" min="6" max="40" step="1" value="12"> 40</li>
-    <li>vertical sub division: 1 <input id="truncated-cone-vsubdiv" type="range" min="1" max="10" step="1" value="5"> 10</li>
-  </div>
-
-  <label>
-    Axis of rotation:
-    <input type="radio" name="rotateGroup" value="rotx" checked> X
-    <input type="radio" name="rotateGroup" value="roty"> Y
-    <input type="radio" name="rotateGroup" value="rotz"> Z
-  </label>
-
 </div>
 <canvas id="gl-canvas"></canvas>
+<div id="msg" style="text-align: center; font-size: 18pt"></div>
 </body>
 </html>
