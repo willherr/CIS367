@@ -31,7 +31,7 @@ function main() {
         .then (prog => {
             shaderProg = prog;
             gl.useProgram(prog);
-            gl.clearColor(0, 0, 0, 1);
+            gl.clearColor(255/255, 218/255, 185/255, 1);
             gl.enable(gl.DEPTH_TEST);    /* enable hidden surface removal */
             gl.enable(gl.CULL_FACE);     /* cull back facing polygons */
             gl.cullFace(gl.BACK);
