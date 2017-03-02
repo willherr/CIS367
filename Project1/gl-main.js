@@ -91,12 +91,12 @@ function resizeHandler() {
 }
 
 function keyboardHandler(event) {
-    const transXpos = mat4.fromTranslation(mat4.create(), vec3.fromValues( 1, 0, 0));
-    const transXneg = mat4.fromTranslation(mat4.create(), vec3.fromValues(-1, 0, 0));
-    const transYpos = mat4.fromTranslation(mat4.create(), vec3.fromValues( 0, 1, 0));
-    const transYneg = mat4.fromTranslation(mat4.create(), vec3.fromValues( 0,-1, 0));
-    const transZpos = mat4.fromTranslation(mat4.create(), vec3.fromValues( 0, 0, 1));
-    const transZneg = mat4.fromTranslation(mat4.create(), vec3.fromValues( 0, 0,-1));
+    const transXpos = mat4.fromTranslation(mat4.create(), vec3.fromValues( 0.2, 0, 0));
+    const transXneg = mat4.fromTranslation(mat4.create(), vec3.fromValues(-0.2, 0, 0));
+    const transYpos = mat4.fromTranslation(mat4.create(), vec3.fromValues( 0, 0.2, 0));
+    const transYneg = mat4.fromTranslation(mat4.create(), vec3.fromValues( 0,-0.2, 0));
+    const transZpos = mat4.fromTranslation(mat4.create(), vec3.fromValues( 0, 0, 0.2));
+    const transZneg = mat4.fromTranslation(mat4.create(), vec3.fromValues( 0, 0,-0.2));
     switch (event.key) {
         case "x":
             mat4.multiply(ringCF, transXneg, ringCF);  // ringCF = Trans * ringCF
@@ -135,11 +135,21 @@ function drawScene() {
 
     if (typeof obj !== 'undefined') {
         var yPos = -0.5;
-        var xPos = 0.2;
+        var xPos = -0.5;
+        var zPos = -1;
+
         for (let k = 0; k < 1; k++) {
-            mat4.fromTranslation(tmpMat, vec3.fromValues(xPos, yPos, 0));
+            mat4.fromTranslation(tmpMat, vec3.fromValues(xPos, yPos, zPos));
             mat4.multiply(tmpMat, ringCF, tmpMat);   // tmp = ringCF * tmpMat
+            this.hoop = mat4.create();
+            this.tmp = mat4.create();
+            let move = vec3.fromValues (0.2, 0, 0);
+            //mat4.rotateZ(this.hoop, this.hoop, Math.PI/16);
+            //mat4.translate (this.hoop, this.hoop, move);
+            mat4.mul (this.tmp, tmpMat, this.hoop);
+            this.obj.draw(posAttr, colAttr, modelUnif, this.tmp);
             obj.draw(posAttr, colAttr, modelUnif, tmpMat);
+
         }
     }
 }

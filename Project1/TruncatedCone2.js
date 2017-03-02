@@ -38,7 +38,7 @@ class TruncatedCone2 {
         /***** Create 'base' of cone *****/       //NOTE: base is always the bigger radius supplied
         vertices.push(0,0,0); /* center of base */
         //vec3.lerp (randColor, col1, col2, Math.random()); /* linear interpolation between two colors */
-        vertices.push(246/255, 247/255, 247/255);
+        vertices.push(220/255, 220/255, 220/255);
         for (let k = 0; k < subDiv; k++) {
             let angle = k * 2 * Math.PI / subDiv;
             let x = bigRadius * Math.cos (angle);
@@ -48,7 +48,7 @@ class TruncatedCone2 {
             vertices.push (x, y, 0); /* perimeter of base */
             //vec3.lerp (randColor, col1, col2, Math.random()); /* linear interpolation between two colors */
             /* the next three floats are RGB */
-            vertices.push(246/255, 247/255, 247/255);
+            vertices.push(220/255, 220/255, 220/255);
         }
 
         /***** Create vertical stacks of cone *****/
@@ -65,7 +65,7 @@ class TruncatedCone2 {
 
                 vertices.push(x, y, subDivHeight);
                 //vec3.lerp(randColor, col1, col2, Math.random());
-                vertices.push(246/255, 247/255, 247/255);
+                vertices.push(220/255, 220/255, 220/255);
             }
             if (col1Undefined) col1 = vec3.fromValues(Math.random(), Math.random(), Math.random());
             if (col2Undefined) col2 = vec3.fromValues(Math.random(), Math.random(), Math.random());
@@ -82,11 +82,11 @@ class TruncatedCone2 {
             vertices.push (x, y, height); /* perimeter of base */
             //vec3.lerp (randColor, col1, col2, Math.random()); /* linear interpolation between two colors */
             /* the next three floats are RGB */
-            vertices.push(246/255, 247/255, 247/255);
+            vertices.push(220/255, 220/255, 220/255);
         }
         vertices.push(0,0,height); /* center of top */
         //vec3.lerp (randColor, col1, col2, Math.random()); /* linear interpolation between two colors */
-        vertices.push(246/255, 247/255, 247/255);
+        vertices.push(220/255, 220/255, 220/255);
 
         /* copy the (x,y,z,r,g,b) sixtuplet into GPU buffer */
         gl.bindBuffer(gl.ARRAY_BUFFER, this.vbuff);

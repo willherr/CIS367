@@ -28,16 +28,30 @@
         #intro {
             margin: 8px;
         }
+        select{
+            border-radius: 4px;
+            width: 128px;
+            height: 32px;
+            margin-top: 2px;
+        }
+        select:hover{
+            box-shadow: 0 3px 6px rgba(0,0,0,0.1), 0 3px 6px rgba(0,0,0,0.12);
+
+        }
+        p{
+            margin-top: 12px;
+            margin-bottom: 15px;
+        }
     </style>
 </head>
 <body onload="main()">
 <div id="intro">
-    CIS 367 Project 1 <br>
-    Vincent Ball and William Herrmann
-    <ul>
-        <li>Handle keyboard events (press x,X,y,Y,z,Z to move the object) </li>
-        <li>Use your browser's developer tools to browse the source code (Ctrl+Shift+I or Cmd+Opt+I)</li>
-    </ul>
+    <h4>CIS 367 Project 1 - Vincent Ball and William Herrmann</h4>
+    <p>Handle keyboard events (press x, X, y, Y, z, Z to move the object)</p>
+    Select Object: <br>
+    <select id="menu">
+        <option value="0">Basketball</option>
+    </select>
 </div>
 <canvas id="gl-canvas"></canvas>
 <div id="msg" style="text-align: center; font-size: 18pt"></div>
