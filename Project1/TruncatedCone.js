@@ -21,7 +21,7 @@ class TruncatedCone {
 			col1Undefined = true;}
 		if (typeof col2 === "undefined"){ col2 = vec3.fromValues(Math.random(), Math.random(), Math.random());
 			col2Undefined = true;}
-		let randColor = vec3.create();
+		//let randColor = vec3.create();
 		let vertices = [];
 		this.vbuff = gl.createBuffer();
 
@@ -34,18 +34,18 @@ class TruncatedCone {
 
 		/***** Create 'base' of cone *****/       //NOTE: base is always the bigger radius supplied
 		vertices.push(0,0,0); /* center of base */
-		vec3.lerp (randColor, col1, col2, Math.random()); /* linear interpolation between two colors */
-		vertices.push(randColor[0], randColor[1], randColor[2]);
-		for (let k = 0; k < subDiv; k++) {
+		//vec3.lerp (randColor, col1, col2, Math.random()); /* linear interpolation between two colors */
+        vertices.push(16/255, 21/255, 25/255);
+        for (let k = 0; k < subDiv; k++) {
 			let angle = k * 2 * Math.PI / subDiv;
 			let x = bigRadius * Math.cos (angle);
 			let y = bigRadius * Math.sin (angle);
 
 			/* the first three floats are 3D (x,y,z) position */
 			vertices.push (x, y, 0); /* perimeter of base */
-			vec3.lerp (randColor, col1, col2, Math.random()); /* linear interpolation between two colors */
+			//vec3.lerp (randColor, col1, col2, Math.random()); /* linear interpolation between two colors */
 			/* the next three floats are RGB */
-			vertices.push(randColor[0], randColor[1], randColor[2]);
+            vertices.push(16/255, 21/255, 25/255);
 		}
 
 		/***** Create vertical stacks of cone *****/
@@ -61,12 +61,12 @@ class TruncatedCone {
 				let y = subDivRadius * Math.sin (angle);
 
 				vertices.push(x, y, subDivHeight);
-				vec3.lerp(randColor, col1, col2, Math.random());
-				vertices.push(randColor[0], randColor[1], randColor[2]);
+				//vec3.lerp(randColor, col1, col2, Math.random());
+                vertices.push(16/255, 21/255, 25/255);
 			}
 			if (col1Undefined) col1 = vec3.fromValues(Math.random(), Math.random(), Math.random());
 			if (col2Undefined) col2 = vec3.fromValues(Math.random(), Math.random(), Math.random());
-			randColor = vec3.create();
+			//randColor = vec3.create();
 		}
 
 		/***** Create 'top' of cone *****/
@@ -77,13 +77,13 @@ class TruncatedCone {
 
 			/* the first three floats are 3D (x,y,z) position */
 			vertices.push (x, y, height); /* perimeter of base */
-			vec3.lerp (randColor, col1, col2, Math.random()); /* linear interpolation between two colors */
+			//vec3.lerp (randColor, col1, col2, Math.random()); /* linear interpolation between two colors */
 			/* the next three floats are RGB */
-			vertices.push(randColor[0], randColor[1], randColor[2]);
+            vertices.push(16/255, 21/255, 25/255);
 		}
 		vertices.push(0,0,height); /* center of top */
-		vec3.lerp (randColor, col1, col2, Math.random()); /* linear interpolation between two colors */
-		vertices.push(randColor[0], randColor[1], randColor[2]);
+		//vec3.lerp (randColor, col1, col2, Math.random()); /* linear interpolation between two colors */
+        vertices.push(16/255, 21/255, 25/255);
 
 		/* copy the (x,y,z,r,g,b) sixtuplet into GPU buffer */
 		gl.bindBuffer(gl.ARRAY_BUFFER, this.vbuff);

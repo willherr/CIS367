@@ -35,7 +35,7 @@ class Torus {
                 //vec3.lerp(randColor, col1, col2, Math.random());
                 /* linear interpolation between two colors */
                 /* the next three floats are RGB */
-                vertices.push(255, 0, 0);
+                vertices.push(255/255, 140/255, 0);
             }
         }
 

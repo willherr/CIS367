@@ -148,7 +148,8 @@ function draw3D() {
     /* We must update the projection and view matrices in the shader */
     gl.uniformMatrix4fv(projUnif, false, persProjMat);
     gl.uniformMatrix4fv(viewUnif, false, viewMat);
-    gl.viewport(0, 0, glCanvas.width/2, glCanvas.height);
+    gl.viewport(0, 0, glCanvas.width, glCanvas.height);
+    //gl.viewport(0, 0, glCanvas.width/2, glCanvas.height); //original
     drawScene();
 }
 

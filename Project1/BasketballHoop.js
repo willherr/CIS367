@@ -6,7 +6,7 @@ class BasketballHoop {
     constructor (gl) {
 
         this.rim = new Torus(gl, 0.2, 0.01, 30, 10);
-        this.backboard = new TruncatedCone(gl, 0.3, 0.3, 0.05, 4, 2);
+        this.backboard = new TruncatedCone2(gl, 0.3, 0.3, 0.05, 4, 2);
         this.pole = new TruncatedCone(gl, 0.07, 0.07, 2, 40, 2);
         this.secondPole = new TruncatedCone(gl, 0.06, 0.06, 0.5, 40, 2);
         this.net  = new Cylinder(gl, 0.02, 0.02, 0.45, 30);
