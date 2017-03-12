@@ -16,7 +16,7 @@ var projUnif, viewUnif, modelUnif;
 
 const IDENTITY = mat4.create();
 var coneSpinAngle;
-var obj;
+var obj, shooter, court;
 var shaderProg;
 
 function main() {
@@ -63,6 +63,8 @@ function main() {
 
             /*Create object*/
             obj = new BasketballHoop(gl);
+            shooter = new Shooter(gl);
+            court = new Court(gl);
 
             globalAxes = new Axes(gl);
             //mat4.rotateX(ringCF, ringCF, -Math.PI/2);
@@ -133,25 +135,63 @@ function render() {
 function drawScene() {
     globalAxes.draw(posAttr, colAttr, modelUnif, IDENTITY);
 
+    let yPos = 0;
+    let xPos = 0;
+    let zPos = 0;
+
     if (typeof obj !== 'undefined') {
-        var yPos = -0.5;
-        var xPos = -0.5;
-        var zPos = -1;
+        yPos = -0.5;
+        xPos = -0.5;
+        zPos = -1;
 
         for (let k = 0; k < 1; k++) {
             mat4.fromTranslation(tmpMat, vec3.fromValues(xPos, yPos, zPos));
             mat4.multiply(tmpMat, ringCF, tmpMat);   // tmp = ringCF * tmpMat
             this.hoop = mat4.create();
             this.tmp = mat4.create();
-            let move = vec3.fromValues (0.2, 0, 0);
+            let move = vec3.fromValues (1, 1, 10);
             //mat4.rotateZ(this.hoop, this.hoop, Math.PI/16);
-            //mat4.translate (this.hoop, this.hoop, move);
+            mat4.translate (this.hoop, this.hoop, move);
             mat4.mul (this.tmp, tmpMat, this.hoop);
             this.obj.draw(posAttr, colAttr, modelUnif, this.tmp);
             obj.draw(posAttr, colAttr, modelUnif, tmpMat);
 
         }
     }
+
+	if (typeof shooter !== 'undefined') {
+		yPos = 0;
+		xPos = 0;
+		zPos = 0;
+
+		for (let k = 0; k < 1; k++) {
+			mat4.fromTranslation(tmpMat, vec3.fromValues(xPos, yPos, zPos));
+			mat4.multiply(tmpMat, ringCF, tmpMat);   // tmp = ringCF * tmpMat
+			this.person1 = mat4.create();
+			this.tmp = mat4.create();
+			let scalePerson1 = vec3.fromValues (4, 4, 4);
+			mat4.scale(this.person1, this.person1, scalePerson1);
+			mat4.mul (this.tmp, tmpMat, this.person1);
+			this.shooter.draw(posAttr, colAttr, modelUnif, this.tmp);
+			shooter.draw(posAttr, colAttr, modelUnif, tmpMat);
+		}
+	}
+
+	if (typeof court !== 'undefined') {
+		yPos = 0;
+		xPos = 0;
+		zPos = -.01;
+
+		for (let k = 0; k < 1; k++) {
+			mat4.fromTranslation(tmpMat, vec3.fromValues(xPos, yPos, zPos));
+			mat4.multiply(tmpMat, ringCF, tmpMat);   // tmp = ringCF * tmpMat
+			this.court_ = mat4.create();
+			this.tmp = mat4.create();
+			mat4.mul (this.tmp, tmpMat, this.court_);
+			this.court.draw(posAttr, colAttr, modelUnif, this.tmp);
+			court.draw(posAttr, colAttr, modelUnif, tmpMat);
+		}
+	}
 }
 
 function draw3D() {

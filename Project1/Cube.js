@@ -1,287 +1,121 @@
 /**
- * Created by Vincent Ball on 2/19/2017.
+ * Created by Hans Dulimarta on 2/1/17.
  */
 class Cube {
-    /**
-     *
-     * Create a 3D cone with tip at the Z+ axis and base on the XY plane
-     * @param {Object} gl the current WebGL context
-     * @param {Number} length  height of the cone
-     * @param {Number} subDiv  number of radial subdivision of the cone base
-     * @param {vec3}   col1    color #1 to use
-     * @param {vec3}   col2    color #2 to use
-     */
-    constructor (gl, length, subDiv, col1, col2) {
+	/**
+	 * Create a cube
+	 * @param {Object} gl      the current WebGL context
+	 * @param {Number} size  size of the cube
+	 * @param {Number} subDiv number of subdivisions
+	 * @param {vec3}   [col1]    color #1 to use
+	 * @param {vec3}   [col2]    color #2 to use
+	 */
+	constructor (gl, size, subDiv, col1, col2, col3) {
 
         /* if colors are undefined, generate random colors */
-        let col1Undefined, col2Undefined = false;
-        if (typeof col1 === "undefined"){ col1 = vec3.fromValues(Math.random(), Math.random(), Math.random());
-            col1Undefined = true;}
-        if (typeof col2 === "undefined"){ col2 = vec3.fromValues(Math.random(), Math.random(), Math.random());
-            col2Undefined = true;}
-        let randColor = vec3.create();
+		if (typeof col1 === "undefined") col1 = vec3.fromValues(Math.random(), Math.random(), Math.random());
+		if (typeof col2 === "undefined") col2 = vec3.fromValues(Math.random(), Math.random(), Math.random());
+		if (typeof col3 === "undefined") col3 = vec3.fromValues(Math.random(), Math.random(), Math.random());
+		let randColor = vec3.create();
 
-        /* Instead of allocating two separate JS arrays (one for position and one for color),
-         in the following loop we pack both position and color
-         so each tuple (x,y,z,r,g,b) describes the properties of a vertex
-         */
+		this.vex = [
+			vec3.fromValues(-size / 2, -size / 2, +size / 2),  // 0
+			vec3.fromValues(+size / 2, -size / 2, +size / 2),  // 1
+			vec3.fromValues(+size / 2, +size / 2, +size / 2),  // 2
+			vec3.fromValues(-size / 2, +size / 2, +size / 2),  // 3
+			vec3.fromValues(-size / 2, -size / 2, -size / 2),  // 4
+			vec3.fromValues(+size / 2, -size / 2, -size / 2),  // 5
+			vec3.fromValues(+size / 2, +size / 2, -size / 2),  // 6
+			vec3.fromValues(-size / 2, +size / 2, -size / 2)   // 7
+		];
+		this.color = [col1, col2, col3, col1, col2, col3, col1, col2];
 
-        let vertices = [];
+		this.index = [];
 
-        /*****************BACK*****************/
-        vertices.push(-length, length, -length);
-        vec3.lerp(randColor, col1, col2, Math.random());
-        vertices.push(randColor[0], randColor[1], randColor[2]);
-        //vertices.push(0, 255, 0);
+		this.split (subDiv, 0, 1, 2, 3, col1); /* top: Z+ */
+		this.split (subDiv, 0, 4, 5, 1, col2); /* front: Y- */
+		this.split (subDiv, 4, 7, 6, 5, col1); /* bottom: Z- */
+		this.split (subDiv, 2, 6, 7, 3, col2); /* back: Y+ */
+		this.split (subDiv, 1, 5, 6, 2, col3); /* right: X+ */
+		this.split (subDiv, 0, 3, 7, 4, col3); /* left: X- */
+		let vertices = [];
+		for (let k = 0; k < this.vex.length; k++)
+		{
+			vertices.push(this.vex[k][0], this.vex[k][1], this.vex[k][2]);
+			vertices.push(this.color[k][0], this.color[k][1], this.color[k][2]);
+			// vec3.lerp (randColor, col1, col2, Math.random()); /* linear interpolation between two colors */
+			// vertices.push(randColor[0], randColor[1], randColor[2]);
+		}
+		this.vbuff = gl.createBuffer();
+		gl.bindBuffer(gl.ARRAY_BUFFER, this.vbuff);
+		gl.bufferData(gl.ARRAY_BUFFER, Float32Array.from(vertices), gl.STATIC_DRAW);
 
-        vertices.push(-length, -length, -length);
-        vec3.lerp(randColor, col1, col2, Math.random());
-        vertices.push(randColor[0], randColor[1], randColor[2]);
-        //vertices.push(0, 255, 0);
+		let ibuff = gl.createBuffer();
+		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ibuff);
+		gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, Uint16Array.from(this.index), gl.STATIC_DRAW)
+		this.indices = [{primitive: gl.TRIANGLES, buffer: ibuff, numPoints: this.index.length}];
+	}
 
-        vertices.push(length, length, -length);
-        vec3.lerp(randColor, col1, col2, Math.random());
-        vertices.push(randColor[0], randColor[1], randColor[2]);
-        //vertices.push(0, 255, 0);
+	split (N, a, b, c, d, col) {
+		if (N > 0) {
+			let mid_ab = vec3.lerp(vec3.create(), this.vex[a], this.vex[b], 0.5);
+			this.vex.push(mid_ab);
+			this.color.push(col);
+			let n_ab = this.vex.length - 1;
 
-        vertices.push(length, -length, -length);
-        vec3.lerp(randColor, col1, col2, Math.random());
-        vertices.push(randColor[0], randColor[1], randColor[2]);
-        //vertices.push(0, 255, 0);
+			let mid_bc = vec3.lerp(vec3.create(), this.vex[b], this.vex[c], 0.5);
+			this.vex.push(mid_bc);
+			this.color.push(col);
+			let n_bc = this.vex.length - 1;
 
+			let mid_cd = vec3.lerp(vec3.create(), this.vex[c], this.vex[d], 0.5);
+			this.vex.push(mid_cd);
+			this.color.push(col);
+			let n_cd = this.vex.length - 1;
 
-        /*************FRONT************/
-        vertices.push(-length, length, length);
-        vec3.lerp(randColor, col1, col2, Math.random());
-        vertices.push(randColor[0], randColor[1], randColor[2]);
-        //vertices.push(0, 0, 255);
+			let mid_da = vec3.lerp(vec3.create(), this.vex[d], this.vex[a], 0.5);
+			this.vex.push(mid_da);
+			this.color.push(col);
+			let n_da = this.vex.length - 1;
 
-        vertices.push(-length, -length, length);
-        vec3.lerp(randColor, col1, col2, Math.random());
-        vertices.push(randColor[0], randColor[1], randColor[2]);
-        //vertices.push(0, 0, 255);
+			let ctr = vec3.lerp(vec3.create(), this.vex[n_ab], this.vex[n_cd], 0.5);
+			this.vex.push(ctr);
+			this.color.push(col);
+			let n_ctr = this.vex.length - 1;
 
-        vertices.push(length, length, length);
-        vec3.lerp(randColor, col1, col2, Math.random());
-        vertices.push(randColor[0], randColor[1], randColor[2]);
-        //vertices.push(0, 0, 255);
-
-        vertices.push(length, -length, length);
-        vec3.lerp(randColor, col1, col2, Math.random());
-        vertices.push(randColor[0], randColor[1], randColor[2]);
-        //vertices.push(0, 0, 255);
-
-
-        /***********BOTTOM**************/
-        vertices.push(-length, -length, -length);
-        vec3.lerp(randColor, col1, col2, Math.random());
-        vertices.push(randColor[0], randColor[1], randColor[2]);
-        //vertices.push(255, 0, 0);
-
-        vertices.push(-length, -length, length);
-        vec3.lerp(randColor, col1, col2, Math.random());
-        vertices.push(randColor[0], randColor[1], randColor[2]);
-        //vertices.push(255, 0, 0);
-
-        vertices.push(length, -length, -length);
-        vec3.lerp(randColor, col1, col2, Math.random());
-        vertices.push(randColor[0], randColor[1], randColor[2]);
-        //vertices.push(255, 0, 0);
-
-        vertices.push(length, -length, length);
-        vec3.lerp(randColor, col1, col2, Math.random());
-        vertices.push(randColor[0], randColor[1], randColor[2]);
-        //vertices.push(255, 0, 0);
-
-
-        /***********TOP**************/
-        vertices.push(-length, length, -length);
-        vec3.lerp(randColor, col1, col2, Math.random());
-        vertices.push(randColor[0], randColor[1], randColor[2]);
-        //vertices.push(0, 255, 255);
-
-        vertices.push(-length, length, length);
-        vec3.lerp(randColor, col1, col2, Math.random());
-        vertices.push(randColor[0], randColor[1], randColor[2]);
-        //vertices.push(0, 255, 255);
-
-        vertices.push(length, length, -length);
-        vec3.lerp(randColor, col1, col2, Math.random());
-        vertices.push(randColor[0], randColor[1], randColor[2]);
-        //vertices.push(0, 255, 255);
-
-        vertices.push(length, length, length);
-        vec3.lerp(randColor, col1, col2, Math.random());
-        vertices.push(randColor[0], randColor[1], randColor[2]);
-        //vertices.push(0, 255, 255);
-
-
-        /*************LEFT***************/
-        vertices.push(-length, length, -length);
-        vec3.lerp(randColor, col1, col2, Math.random());
-        vertices.push(randColor[0], randColor[1], randColor[2]);
-        //vertices.push(255, 255, 0);
-
-        vertices.push(-length, -length, -length);
-        vec3.lerp(randColor, col1, col2, Math.random());
-        vertices.push(randColor[0], randColor[1], randColor[2]);
-        //vertices.push(255, 255, 0);
-
-        vertices.push(-length, length, length);
-        vec3.lerp(randColor, col1, col2, Math.random());
-        vertices.push(randColor[0], randColor[1], randColor[2]);
-        //vertices.push(255, 255, 0);
-
-        vertices.push(-length, -length, length);
-        vec3.lerp(randColor, col1, col2, Math.random());
-        vertices.push(randColor[0], randColor[1], randColor[2]);
-        //vertices.push(255, 255, 0);
-
-
-        /**************RIGHT*************/
-        vertices.push(length, length, length);
-        vec3.lerp(randColor, col1, col2, Math.random());
-        vertices.push(randColor[0], randColor[1], randColor[2]);
-        //vertices.push(255, 0, 255);
-
-        vertices.push(length, -length, length);
-        vec3.lerp(randColor, col1, col2, Math.random());
-        vertices.push(randColor[0], randColor[1], randColor[2]);
-        //vertices.push(255, 0, 255);
-
-        vertices.push(length, length, -length);
-        vec3.lerp(randColor, col1, col2, Math.random());
-        vertices.push(randColor[0], randColor[1], randColor[2]);
-        //vertices.push(255, 0, 255);
-
-        vertices.push(length, -length, -length);
-        vec3.lerp(randColor, col1, col2, Math.random());
-        vertices.push(randColor[0], randColor[1], randColor[2]);
-        //vertices.push(255, 0, 255);
-
-        this.vbuff = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.vbuff);
-        gl.bufferData(gl.ARRAY_BUFFER, Float32Array.from(vertices), gl.STATIC_DRAW);
-
-        let indices = [];
-        let indices2 = [];
-        let indices3 = [];
-        let indices4 = [];
-        let indices5 = [];
-        let indices6 = [];
-
-
-        //Back
-        indices.push(0,2,1,3);
-
-        //Front
-        indices2.push(4,6,5,7);
-
-        //Bottom
-        indices3.push(8,10,9,11);
-
-        //Top
-        indices4.push(12,14,13,15);
-
-        //Left
-        indices5.push(16,18,17,19);
-
-        //Right
-        indices6.push(20,22,21,23);
-
-
-        this.index_buffer = gl.createBuffer ();
-        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.index_buffer);
-        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, Uint8Array.from(indices), gl.STATIC_DRAW);
-
-        this.index_buffer2 = gl.createBuffer ();
-        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.index_buffer2);
-        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, Uint8Array.from(indices2), gl.STATIC_DRAW);
-
-        this.index_buffer3 = gl.createBuffer ();
-        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.index_buffer3);
-        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, Uint8Array.from(indices3), gl.STATIC_DRAW);
-
-        this.index_buffer4 = gl.createBuffer ();
-        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.index_buffer4);
-        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, Uint8Array.from(indices4), gl.STATIC_DRAW);
-
-        this.index_buffer5 = gl.createBuffer ();
-        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.index_buffer5);
-        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, Uint8Array.from(indices5), gl.STATIC_DRAW);
-
-        this.index_buffer6 = gl.createBuffer ();
-        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.index_buffer6);
-        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, Uint8Array.from(indices6), gl.STATIC_DRAW);
-
-        /* Put the indices as an array of objects. Each object has three attributes:
-         primitive, buffer, and numPoints */
-        this.indices = [{"primitive": gl.TRIANGLE_STRIP, "buffer": this.index_buffer, "numPoints": indices.length},
-            {"primitive": gl.TRIANGLE_STRIP, "buffer": this.index_buffer2, "numPoints": indices2.length},
-            {"primitive": gl.TRIANGLE_STRIP, "buffer": this.index_buffer3, "numPoints": indices3.length},
-            {"primitive": gl.TRIANGLE_STRIP, "buffer": this.index_buffer4, "numPoints": indices4.length},
-            {"primitive": gl.TRIANGLE_STRIP, "buffer": this.index_buffer5, "numPoints": indices5.length},
-            {"primitive": gl.TRIANGLE_STRIP, "buffer": this.index_buffer6, "numPoints": indices6.length}];
-
-    }
-
-    /**
-     * Draw the object
-     * @param {Number} vertexAttr handle to a vec3 attribute in the vertex shader for vertex xyz-position
-     * @param {Number} colorAttr  a handle to a vec3 attribute in the vertex shader for vertex rgb-color
-     * @param {Number} modelUniform a handle to a mat4 uniform in the shader for the coordinate frame of the model
-     * @param {mat4} coordFrame a JS mat4 variable that holds the actual coordinate frame of the object
-     */
-    draw(vertexAttr, colorAttr, modelUniform, coordFrame) {
+			this.split (N - 1, a, n_ab, n_ctr, n_da, col);
+			this.split (N - 1, n_da, n_ctr, n_cd, d, col);
+			this.split (N - 1, n_ab, b, n_bc, n_ctr, col);
+			this.split (N - 1, n_ctr, n_bc, c, n_cd, col);
+		} else {
+            /* stop recursion */
+			this.index.push(a, b, c);
+			this.index.push(a, c, d);
+		}
+	}
+	/**
+	 * Draw the object
+	 * @param {Number} vertexAttr a handle to a vec3 attribute in the vertex shader for vertex xyz-position
+	 * @param {Number} colorAttr  a handle to a vec3 attribute in the vertex shader for vertex rgb-color
+	 * @param {Number} modelUniform a handle to a mat4 uniform in the shader for the coordinate frame of the model
+	 * @param {mat4} coordFrame a JS mat4 variable that holds the actual coordinate frame of the object
+	 */
+	draw(vertexAttr, colorAttr, modelUniform, coordFrame) {
         /* copy the coordinate frame matrix to the uniform memory in shader */
-        gl.uniformMatrix4fv(modelUniform, false, coordFrame);
+		gl.uniformMatrix4fv(modelUniform, false, coordFrame);
 
         /* binder the (vertex+color) buffer */
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.vbuff);
+		gl.bindBuffer(gl.ARRAY_BUFFER, this.vbuff);
 
         /* with the "packed layout"  (x,y,z,r,g,b),
          the stride distance between one group to the next is 24 bytes */
-        gl.vertexAttribPointer(vertexAttr, 3, gl.FLOAT, false, 24, 0); /* (x,y,z) begins at offset 0 */
-        gl.vertexAttribPointer(colorAttr, 3, gl.FLOAT, false, 24, 12); /* (r,g,b) begins at offset 12 */
+		gl.vertexAttribPointer(vertexAttr, 3, gl.FLOAT, false, 24, 0); /* (x,y,z) begins at offset 0 */
+		gl.vertexAttribPointer(colorAttr, 3, gl.FLOAT, false, 24, 12); /* (r,g,b) begins at offset 12 */
 
-
-        //draw top and bottom
-        for (let k = 0; k < 1; k++) {
-            let obj = this.indices[k];
-            gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, obj.buffer);
-            gl.drawElements(obj.primitive, obj.numPoints, gl.UNSIGNED_BYTE, 0);
-        }
-
-
-        for (let k = 1; k < 2; k++) {
-            let obj = this.indices[k];
-            gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, obj.buffer);
-            gl.drawElements(obj.primitive, obj.numPoints, gl.UNSIGNED_BYTE, 0);
-        }
-
-        for (let k = 2; k < 3; k++) {
-            let obj = this.indices[k];
-            gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, obj.buffer);
-            gl.drawElements(obj.primitive, obj.numPoints, gl.UNSIGNED_BYTE, 0);
-        }
-
-        for (let k = 3; k < 4; k++) {
-            let obj = this.indices[k];
-            gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, obj.buffer);
-            gl.drawElements(obj.primitive, obj.numPoints, gl.UNSIGNED_BYTE, 0);
-        }
-
-        for (let k = 4; k < 5; k++) {
-            let obj = this.indices[k];
-            gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, obj.buffer);
-            gl.drawElements(obj.primitive, obj.numPoints, gl.UNSIGNED_BYTE, 0);
-        }
-
-        for (let k = 5; k < 6; k++) {
-            let obj = this.indices[k];
-            gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, obj.buffer);
-            gl.drawElements(obj.primitive, obj.numPoints, gl.UNSIGNED_BYTE, 0);
-        }
-
-    }
+		for (let k = 0; k < this.indices.length; k++) {
+			let obj = this.indices[k];
+			gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, obj.buffer);
+			gl.drawElements(obj.primitive, obj.numPoints, gl.UNSIGNED_SHORT, 0);
+		}
+	}
 }
