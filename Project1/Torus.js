@@ -17,7 +17,7 @@ class Torus {
         /* if colors are undefined, generate random colors */
 		if (typeof col1 === "undefined") col1 = vec3.fromValues(Math.random(), Math.random(), Math.random());
 		if (typeof col2 === "undefined") col2 = vec3.fromValues(Math.random(), Math.random(), Math.random());
-		let randColor = vec3.create();
+		//let randColor = vec3.create();
 		let vertices = [];
 		for (let s = 0; s < minDiv; s++) {
 			let minAngle = s * 2 * Math.PI / minDiv;
@@ -30,10 +30,10 @@ class Torus {
 
                 /* the first three floats are 3D (x,y,z) position */
 				vertices.push(x, y, h);
-				vec3.lerp(randColor, col1, col2, Math.random());
+				//vec3.lerp(randColor, col1, col2, Math.random());
                 /* linear interpolation between two colors */
                 /* the next three floats are RGB */
-				vertices.push(randColor[0], randColor[1], randColor[2]);
+				vertices.push(1, 140/255, 0);
 			}
 		}
 

@@ -6,8 +6,8 @@ class BasketballHoop {
     constructor (gl) {
 
         this.rim = new Torus(gl, 0.1, 0.01, 30, 10);
-        this.backboard = new TruncatedCone2(gl, 0.47, 0.47, 0.03, 4, 2);
-        this.pole = new TruncatedCone(gl, 0.04, 0.04, 2.75, 40, 2);
+        this.backboard = new TruncatedCone2(gl, 0.45, 0.45, 0.03, 4, 2);
+        this.pole = new TruncatedCone(gl, 0.04, 0.04, 3.2, 40, 2);
         this.secondPole = new TruncatedCone(gl, 0.05, 0.05, 0.7, 40, 2);
         this.net  = new Cylinder(gl, 0.02, 0.02, 0.45, 30);
         this.net2 = new Cylinder(gl, 0.02, 0.02, 0.45, 30);
@@ -27,17 +27,17 @@ class BasketballHoop {
         let moveOver = vec3.fromValues (1.75, -1, -1.7);
         mat4.translate (this.secondPoleTransform, this.secondPoleTransform, moveOver);
         mat4.rotateX (this.secondPoleTransform, this.secondPoleTransform, -Math.PI/3);
-        let moveOver2 = vec3.fromValues (0, -2.35, 1.38);
+        let moveOver2 = vec3.fromValues (0, -2.75, 1.62);
         mat4.translate (this.secondPoleTransform, this.secondPoleTransform, moveOver2);
 
         this.backboardTransform = mat4.create();
         mat4.rotateX(this.backboardTransform, this.backboardTransform, Math.PI/2.3);
         mat4.rotateY(this.backboardTransform, this.backboardTransform, Math.PI/3.3);
-        let moveBB = vec3.fromValues (0.2, 1.8, 1.45);
+        let moveBB = vec3.fromValues (0.2, 2.2, 1.4);
         mat4.translate (this.backboardTransform, this.backboardTransform, moveBB);
 
         this.rimTransform = mat4.create();
-        let moveUp = vec3.fromValues (1.33, -0.1, 1.777);
+        let moveUp = vec3.fromValues (1.225, -0.105, 2.1);
         mat4.translate (this.rimTransform, this.rimTransform, moveUp);
         mat4.rotateY(this.rimTransform, this.rimTransform, Math.PI/200);
         mat4.rotateX(this.rimTransform, this.rimTransform, Math.PI/100);
