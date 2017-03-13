@@ -73,6 +73,7 @@ function main() {
             obj = new BasketballHoop(gl);
             shooter = new Shooter(gl);
             court = new Court(gl);
+            fence = new Fence(gl);
 
             globalAxes = new Axes(gl);
             //mat4.rotateX(ringCF, ringCF, -Math.PI/2);
@@ -222,6 +223,38 @@ function drawScene() {
 			court.draw(posAttr, colAttr, modelUnif, tmpMat);
 		}
 	}
+
+    if (typeof fence !== 'undefined') {
+        yPos = 0;
+        xPos = 0;
+        zPos = 0;
+
+        for (let k = 0; k < 22; k++) {
+            mat4.fromTranslation(tmpMat, vec3.fromValues(xPos, yPos, zPos));
+            mat4.multiply(tmpMat, ringCF, tmpMat);   // tmp = ringCF * tmpMat
+            this.tmp = mat4.create();
+            mat4.mul(this.tmp, tmpMat, this.fence);
+            this.fence.draw(posAttr, colAttr, modelUnif, this.tmp);
+            fence.draw(posAttr, colAttr, modelUnif, tmpMat);
+            xPos = xPos + 0.07;
+            yPos = yPos - 0.07;
+        }
+
+        yPos = 0;
+        xPos = 0;
+        zPos = 0;
+        for (let k = 0; k < 22; k++) {
+            mat4.fromTranslation(tmpMat, vec3.fromValues(xPos, yPos, zPos));
+            mat4.multiply(tmpMat, ringCF, tmpMat);   // tmp = ringCF * tmpMat
+            this.tmp = mat4.create();
+            mat4.mul(this.tmp, tmpMat, this.fence);
+            this.fence.draw(posAttr, colAttr, modelUnif, this.tmp);
+            fence.draw(posAttr, colAttr, modelUnif, tmpMat);
+            xPos = xPos - 0.07;
+            yPos = yPos + 0.07;
+        }
+
+    }
 }
 
 function draw3D() {

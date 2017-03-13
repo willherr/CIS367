@@ -8,32 +8,32 @@ class Cylinder {
 		if (typeof col1 === "undefined") col1 = vec3.fromValues(0xff/255, 0x59/255, 0x59/255);
 		if (typeof col2 === "undefined") col2 = vec3.fromValues(0xFF/255, 0xC5/255, 0x6C/255);
 		let vertices = [];
-		let randColor = vec3.create();
+		//let randColor = vec3.create();
 		this.vbuff = gl.createBuffer();
 
         /* create the top points */
 		vertices.push(0,0,height/2);
-		vec3.lerp (randColor, col1, col2, Math.random()); /* linear interpolation between two colors */
-		vertices.push(randColor[0], randColor[1], randColor[2]);
+		//vec3.lerp (randColor, col1, col2, Math.random()); /* linear interpolation between two colors */
+        vertices.push(77/255, 77/255, 77/255);
 		for (let k = 0; k < subDiv; k++) {
 			let angle = k * 2 * Math.PI / subDiv;
 			let x = topRadius * Math.cos (angle);
 			let y = topRadius * Math.sin (angle);
 			vertices.push (x, y, height/2); /* perimeter */
-			vec3.lerp (randColor, col1, col2, Math.random()); /* linear interpolation between two colors */
-			vertices.push(randColor[0], randColor[1], randColor[2]);
+			//vec3.lerp (randColor, col1, col2, Math.random()); /* linear interpolation between two colors */
+            vertices.push(77/255, 77/255, 77/255);
 		}
         /* create the bottom points */
 		vertices.push(0,0, -height/2);
-		vec3.lerp (randColor, col1, col2, Math.random()); /* linear interpolation between two colors */
-		vertices.push(randColor[0], randColor[1], randColor[2]);
+		//vec3.lerp (randColor, col1, col2, Math.random()); /* linear interpolation between two colors */
+        vertices.push(77/255, 77/255, 77/255);
 		for (let k = 0; k < subDiv; k++) {
 			let angle = k * 2 * Math.PI / subDiv;
 			let x = botRadius * Math.cos (angle);
 			let y = botRadius * Math.sin (angle);
 			vertices.push (x, y, -height/2); /* perimeter */
-			vec3.lerp (randColor, col1, col2, Math.random()); /* linear interpolation between two colors */
-			vertices.push(randColor[0], randColor[1], randColor[2]);
+			//vec3.lerp (randColor, col1, col2, Math.random()); /* linear interpolation between two colors */
+            vertices.push(77/255, 77/255, 77/255);
 		}
 		gl.bindBuffer(gl.ARRAY_BUFFER, this.vbuff);
 		gl.bufferData(gl.ARRAY_BUFFER, Float32Array.from(vertices), gl.STATIC_DRAW);
