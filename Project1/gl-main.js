@@ -17,7 +17,7 @@ var projUnif, viewUnif, modelUnif;
 
 const IDENTITY = mat4.create();
 var coneSpinAngle;
-var obj, shooter, court;
+var obj, shooter, court, basketball;
 var shaderProg;
 let paramGroup;
 
@@ -74,6 +74,7 @@ function main() {
             shooter = new Shooter(gl);
             court = new Court(gl);
             fence = new Fence(gl);
+            basketball = new Basketball(gl);
 
             globalAxes = new Axes(gl);
             //mat4.rotateX(ringCF, ringCF, -Math.PI/2);
@@ -207,6 +208,21 @@ function drawScene() {
     }
 }
 
+	if (typeof basketball !== 'undefined') {
+		yPos = 0;
+		xPos = 0;
+		zPos = 0;
+
+		for (let k = 0; k < 1; k++) {
+			mat4.fromTranslation(tmpMat, vec3.fromValues(xPos, yPos, zPos));
+			mat4.multiply(tmpMat, ringCF, tmpMat);   // tmp = ringCF * tmpMat
+			this.basketball_ = mat4.create();
+			this.tmp = mat4.create();
+			mat4.mul (this.tmp, tmpMat, this.basketball_);
+			this.basketball.draw(posAttr, colAttr, modelUnif, this.tmp);
+			basketball.draw(posAttr, colAttr, modelUnif, tmpMat);
+		}
+	}
 
 	if (typeof court !== 'undefined') {
 		yPos = 0;
