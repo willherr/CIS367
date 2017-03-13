@@ -7,6 +7,7 @@ var glCanvas, textOut;
 var orthoProjMat, persProjMat, viewMat, topViewMat, ringCF;
 var axisBuff, tmpMat;
 var globalAxes;
+var currSelection = 0;
 
 /* Vertex shader attribute variables */
 var posAttr, colAttr;
@@ -18,13 +19,20 @@ const IDENTITY = mat4.create();
 var coneSpinAngle;
 var obj, shooter, court;
 var shaderProg;
+let paramGroup;
 
 function main() {
     glCanvas = document.getElementById("gl-canvas");
+    let menu = document.getElementById("menu");
+    menu.addEventListener("change", menuSelected);
     textOut = document.getElementById("msg");
     gl = WebGLUtils.setupWebGL(glCanvas, null);
     axisBuff = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, axisBuff);
+
+    paramGroup = document.getElementsByClassName("param-group");
+    paramGroup[0].hidden = false;
+
     window.addEventListener("resize", resizeHandler, false);
     window.addEventListener("keypress", keyboardHandler, false);
     ShaderUtils.loadFromFile(gl, "vshader.glsl", "fshader.glsl")
@@ -134,6 +142,10 @@ function render() {
 
 function drawScene() {
     globalAxes.draw(posAttr, colAttr, modelUnif, IDENTITY);
+    /*
+     let option1 = document.getElementById("option").options[0].value;
+     let option2 = document.getElementById("option").options[1].value;
+     */
 
     let yPos = 0;
     let xPos = 0;
@@ -149,33 +161,51 @@ function drawScene() {
             mat4.multiply(tmpMat, ringCF, tmpMat);   // tmp = ringCF * tmpMat
             this.hoop = mat4.create();
             this.tmp = mat4.create();
-            let move = vec3.fromValues (1, 1, 10);
+            let move = vec3.fromValues(1, 1, 10);
             //mat4.rotateZ(this.hoop, this.hoop, Math.PI/16);
-            mat4.translate (this.hoop, this.hoop, move);
-            mat4.mul (this.tmp, tmpMat, this.hoop);
+            mat4.translate(this.hoop, this.hoop, move);
+            mat4.mul(this.tmp, tmpMat, this.hoop);
             this.obj.draw(posAttr, colAttr, modelUnif, this.tmp);
             obj.draw(posAttr, colAttr, modelUnif, tmpMat);
 
         }
     }
 
-	if (typeof shooter !== 'undefined') {
-		yPos = 0;
-		xPos = 0;
-		zPos = 0;
+    if (typeof shooter !== 'undefined') {
+        yPos = 0;
+        xPos = 0;
+        zPos = 0;
 
-		for (let k = 0; k < 1; k++) {
-			mat4.fromTranslation(tmpMat, vec3.fromValues(xPos, yPos, zPos));
-			mat4.multiply(tmpMat, ringCF, tmpMat);   // tmp = ringCF * tmpMat
-			this.person1 = mat4.create();
-			this.tmp = mat4.create();
-			let scalePerson1 = vec3.fromValues (4, 4, 4);
-			mat4.scale(this.person1, this.person1, scalePerson1);
-			mat4.mul (this.tmp, tmpMat, this.person1);
-			this.shooter.draw(posAttr, colAttr, modelUnif, this.tmp);
-			shooter.draw(posAttr, colAttr, modelUnif, tmpMat);
-		}
-	}
+        switch (currSelection) {
+            case 0:
+                mat4.fromTranslation(tmpMat, vec3.fromValues(xPos, yPos, zPos));
+                mat4.multiply(tmpMat, ringCF, tmpMat);   // tmp = ringCF * tmpMat
+                this.person1 = mat4.create();
+                this.tmp = mat4.create();
+                let scalePerson1 = vec3.fromValues(4, 4, 4);
+                mat4.scale(this.person1, this.person1, scalePerson1);
+                mat4.mul(this.tmp, tmpMat, this.person1);
+                this.shooter.draw(posAttr, colAttr, modelUnif, this.tmp);
+                shooter.draw(posAttr, colAttr, modelUnif, tmpMat);
+                break;
+            case 1:
+                for (let k = 0; k < 2; k++) {
+                    mat4.fromTranslation(tmpMat, vec3.fromValues(xPos, yPos, zPos));
+                    mat4.multiply(tmpMat, ringCF, tmpMat);   // tmp = ringCF * tmpMat
+                    this.person1 = mat4.create();
+                    this.tmp = mat4.create();
+                    let scalePerson1 = vec3.fromValues(4, 4, 4);
+                    mat4.scale(this.person1, this.person1, scalePerson1);
+                    mat4.mul(this.tmp, tmpMat, this.person1);
+                    this.shooter.draw(posAttr, colAttr, modelUnif, this.tmp);
+                    shooter.draw(posAttr, colAttr, modelUnif, tmpMat);
+                    xPos = xPos + 0.6;
+                    zPos = zPos + 0.25;
+                }
+                    break;
+    }
+}
+
 
 	if (typeof court !== 'undefined') {
 		yPos = 0;
@@ -209,4 +239,12 @@ function drawTopView() {
     //gl.uniformMatrix4fv(viewUnif, false, topViewMat);
     gl.viewport(glCanvas.width/2, 0, glCanvas.width/2, glCanvas.height);
     drawScene();
+}
+
+function menuSelected(ev) {
+    let sel = ev.currentTarget.selectedIndex;
+    /*paramGroup[currSelection].hidden = true;*/
+    /*paramGroup[sel].hidden = false;*/
+    currSelection = sel;
+    console.log("New selection is ", currSelection);
 }

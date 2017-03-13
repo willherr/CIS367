@@ -28,7 +28,7 @@
             display: block;
             background-color: #FFDEAD;
         }
-        #intro {
+        .param-group {
             margin: 8px;
         }
         select{
@@ -47,8 +47,9 @@
         }
     </style>
 </head>
+
 <body onload="main()">
-<div id="intro">
+<div class="param-group">
     <h4>CIS 367 Project 1 - Vincent Ball and William Herrmann</h4>
     <p>Handle keyboard events (press x, X, y, Y, z, Z to move the object)</p>
     Select Object: <br>
@@ -57,9 +58,9 @@
     </select>
     &emsp; &emsp; &emsp;
     Select play style:
-    <select id="option">
+    <select id="menu">
         <option value="0">Shootaround</option>
-        <option value="0">One on one</option>
+        <option value="1">One on one</option>
     </select>
 </div>
 <canvas id="gl-canvas"></canvas>
