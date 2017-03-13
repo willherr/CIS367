@@ -16,7 +16,7 @@ var posAttr, colAttr;
 var projUnif, viewUnif, modelUnif;
 
 const IDENTITY = mat4.create();
-var coneSpinAngle;
+var coneSpinAngle, cameraAngles, cameraAngleIndex;
 var obj, shooter, court, basketball;
 var shaderProg;
 let paramGroup;
@@ -53,21 +53,19 @@ function main() {
             orthoProjMat = mat4.create();
             persProjMat = mat4.create();
             viewMat = mat4.create();
-            //topViewMat = mat4.create();
             ringCF = mat4.create();
             tmpMat = mat4.create();
             mat4.lookAt(viewMat,
                 vec3.fromValues(2, 2, 2), /* eye */
                 vec3.fromValues(0, 0, 0), /* focal point */
                 vec3.fromValues(0, 0, 1)); /* up */
-            /*
-            mat4.lookAt(topViewMat,
-                vec3.fromValues(0,0,2),
-                vec3.fromValues(0,0,0),
-                vec3.fromValues(0,1,0)
-            );
-            */
             gl.uniformMatrix4fv(modelUnif, false, ringCF);
+
+            cameraAngles = [vec3.fromValues(2, 2, 2),
+                vec3.fromValues(-2, 2, 2),
+                vec3.fromValues(-2, -2, 2),
+                vec3.fromValues(2, -2, 2)];
+            cameraAngleIndex = 0;
 
             /*Create object*/
             obj = new BasketballHoop(gl);
@@ -77,7 +75,6 @@ function main() {
             basketball = new Basketball(gl);
 
             globalAxes = new Axes(gl);
-            //mat4.rotateX(ringCF, ringCF, -Math.PI/2);
             coneSpinAngle = 0;
             resizeHandler();
             render();
@@ -127,6 +124,15 @@ function keyboardHandler(event) {
             break;
         case "Z":
             mat4.multiply(ringCF, transZpos, ringCF);  // ringCF = Trans * ringCF
+            break;
+
+        case "r": //move camera right
+            cameraAngleIndex++;
+            cameraAngleIndex = cameraAngleIndex % 4;
+			mat4.lookAt(viewMat,
+				cameraAngles[cameraAngleIndex], /* eye */
+				vec3.fromValues(0, 0, 0), /* focal point */
+				vec3.fromValues(0, 0, 1)); /* up */
             break;
     }
     textOut.innerHTML = "Ring origin (" + ringCF[12].toFixed(1) + ", "
