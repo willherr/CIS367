@@ -19,6 +19,9 @@ const IDENTITY = mat4.create();
 var coneSpinAngle, cameraAngles, cameraAngleIndex;
 var obj, shooter, court, basketball;
 var shaderProg;
+
+var basketballx, basketbally, basketballz, shooterx, shootery, shooterz;
+
 let paramGroup;
 
 function main() {
@@ -76,6 +79,14 @@ function main() {
 
             globalAxes = new Axes(gl);
             coneSpinAngle = 0;
+
+            basketballx = 0;
+            basketbally = 0;
+            basketballz = 0;
+            shooterx = 0;
+            shootery = 0;
+            shooterz = 0;
+
             resizeHandler();
             render();
         });
@@ -96,7 +107,6 @@ function resizeHandler() {
     } else {
         alert ("Window is too narrow!");
     }
-
 }
 
 function keyboardHandler(event) {
@@ -124,9 +134,47 @@ function keyboardHandler(event) {
             break;
         case "Z":
             mat4.multiply(ringCF, transZpos, ringCF);  // ringCF = Trans * ringCF
-            break;
+            break
 
-        case "r": //move camera right
+        case "d":
+		    basketballx = basketballx - .01;
+			break;
+		case "a":
+			basketballx = basketballx + .01;
+			break;
+		case "w":
+			basketbally = basketbally - .01;
+			break;
+		case "s":
+			basketbally = basketbally + .01;
+			break;
+		case "e":
+			basketballz = basketballz - .01;
+			break;
+		case "r":
+			basketballz = basketballz + .01;
+			break;
+
+		case "l":
+			shooterx = shooterx - .01;
+			break;
+		case "j":
+			shooterx = shooterx + .01;
+			break;
+		case "i":
+			shootery = shootery - .01;
+			break;
+		case "k":
+			shootery = shootery + .01;
+			break;
+		case "o":
+			shooterz = shooterz - .01;
+			break;
+		case "p":
+			shooterz = shooterz + .01;
+			break;
+
+        case "q": //move camera right
             cameraAngleIndex++;
             cameraAngleIndex = cameraAngleIndex % 4;
 			mat4.lookAt(viewMat,
@@ -180,9 +228,9 @@ function drawScene() {
     }
 
     if (typeof shooter !== 'undefined') {
-        yPos = 0;
-        xPos = 0;
-        zPos = 0;
+        yPos = shootery;
+        xPos = shooterx;
+        zPos = shooterz;
 
         switch (currSelection) {
             case 0:
@@ -215,9 +263,9 @@ function drawScene() {
 }
 
 	if (typeof basketball !== 'undefined') {
-		yPos = 0;
-		xPos = 0;
-		zPos = 0;
+		yPos = basketbally;
+		xPos = basketballx;
+		zPos = basketballz;
 
 		for (let k = 0; k < 1; k++) {
 			mat4.fromTranslation(tmpMat, vec3.fromValues(xPos, yPos, zPos));
