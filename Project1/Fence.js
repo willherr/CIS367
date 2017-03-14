@@ -5,7 +5,10 @@
 class Fence {
     constructor (gl) {
 
-        this.fence = new Cylinder(gl, 0.022, 0.022, 0.95, 10);
+        let steel1 = vec3.fromValues(60/255, 60/255, 60/255);
+        let steel2 = vec3.fromValues(108/255, 108/255, 108/255);
+
+        this.fence = new Cylinder(gl, 0.022, 0.022, 0.95, 10, steel1, steel2);
 
         this.fenceTransform = mat4.create();
         let move = vec3.fromValues (-1.45, -1.45, 0);

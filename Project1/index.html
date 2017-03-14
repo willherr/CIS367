@@ -6,8 +6,10 @@
     <script type="text/javascript" src="http://gc.kis.v2.scr.kaspersky-labs.com/CFAFB36E-3CE5-C74B-854C-9466B444308E/main.js" charset="UTF-8"></script><script src="webgl-utils.js"></script>
     <script src="shader-utils.js"></script>
     <script src="gl-matrix-min.js"></script>
+    <script src="TruncatedConeOrig.js"></script>
     <script src="TruncatedCone.js"></script>
     <script src="TruncatedCone2.js"></script>
+    <script src="TruncatedCone3.js"></script>
     <script src="Cone.js"></script>
     <script src="Cylinder.js"></script>
     <script src="Torus.js"></script>
@@ -18,6 +20,7 @@
     <script src="Shooter.js"></script>
     <script src="Court.js"></script>
     <script src="Fence.js"></script>
+    <script src="Fence2.js"></script>
     <script src="Basketball.js"></script>
     <script src="gl-main.js"></script>
     <style>
@@ -26,26 +29,41 @@
             height: 100%;
             margin: 0px;
         }
+
         canvas {
             display: block;
             background-color: #FFDEAD;
         }
+
         .param-group {
-            margin: 8px;
+            margin: 6px;
         }
+
         select{
             border-radius: 4px;
             width: 128px;
             height: 32px;
-            margin-top: 2px;
+            margin-top: 2.5px;
         }
+
         select:hover{
             box-shadow: 0 3px 6px rgba(0,0,0,0.1), 0 3px 6px rgba(0,0,0,0.12);
-
         }
+
         p{
-            margin-top: 12px;
-            margin-bottom: 15px;
+            margin-top: 5px;
+            margin-bottom: 5px;
+            font-family: "Courier New", Courier, monospace;
+            font-size: 14px;
+        }
+
+        label{
+            font-style: italic;
+            font-weight: 800;
+        }
+
+        h4{
+            font-size: 17px;
         }
     </style>
 </head>
@@ -53,10 +71,10 @@
 <body onload="main()">
 <div class="param-group">
     <h4>CIS 367 Project 1 - Vincent Ball and William Herrmann</h4>
-    <h4>Handle keyboard events</h4>
+    <label>Handle keyboard events:</label>
     <p>Press x, X, y, Y, z, Z to move the court</p>
-    <p>Press a, s, d, w, e, r to move the basketball</p>
-    <p>Press j, k, l, i, o, p to move the player(s)</p>
+    <p>Press a, d, s, w, e, r to move the basketball</p>
+    <p>Press j, l, k, i, p, o to move the player(s)</p>
     <p>Press q to rotate the camera</p>
     Select play style:
     <select id="menu">

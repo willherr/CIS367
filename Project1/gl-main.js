@@ -17,7 +17,7 @@ var projUnif, viewUnif, modelUnif;
 
 const IDENTITY = mat4.create();
 var coneSpinAngle, cameraAngles, cameraAngleIndex;
-var obj, shooter, court, basketball;
+var obj, shooter, court, basketball, fence, fence2, sun;
 var shaderProg;
 
 var basketballx, basketbally, basketballz, shooterx, shootery, shooterz;
@@ -42,7 +42,7 @@ function main() {
         .then (prog => {
             shaderProg = prog;
             gl.useProgram(prog);
-            gl.clearColor(171/255, 220/255, 241/255, 1);
+            gl.clearColor(135/255, 206/255, 248/255, 1);
             gl.enable(gl.DEPTH_TEST);    /* enable hidden surface removal */
             gl.enable(gl.CULL_FACE);     /* cull back facing polygons */
             gl.cullFace(gl.BACK);
@@ -75,6 +75,7 @@ function main() {
             shooter = new Shooter(gl);
             court = new Court(gl);
             fence = new Fence(gl);
+            fence2 = new Fence2(gl);
             basketball = new Basketball(gl);
 
             globalAxes = new Axes(gl);
@@ -148,10 +149,10 @@ function keyboardHandler(event) {
 		case "s":
 			basketbally = basketbally + .01;
 			break;
-		case "e":
+		case "r":
 			basketballz = basketballz - .01;
 			break;
-		case "r":
+		case "e":
 			basketballz = basketballz + .01;
 			break;
 
@@ -183,7 +184,7 @@ function keyboardHandler(event) {
 				vec3.fromValues(0, 0, 1)); /* up */
             break;
     }
-    textOut.innerHTML = "Ring origin (" + ringCF[12].toFixed(1) + ", "
+    textOut.innerHTML = "Court origin (" + ringCF[12].toFixed(1) + ", "
         + ringCF[13].toFixed(1) + ", "
         + ringCF[14].toFixed(1) + ")";
 }
@@ -325,6 +326,25 @@ function drawScene() {
         }
 
     }
+
+    if (typeof fence2 !== 'undefined') {
+
+        xPos = -2.8;
+        yPos = 0.15;
+        zPos = 0;
+
+        for (let k = 0; k < 29; k++) {
+            mat4.fromTranslation(tmpMat, vec3.fromValues(xPos, yPos, zPos));
+            mat4.multiply(tmpMat, ringCF, tmpMat);   // tmp = ringCF * tmpMat
+            this.tmp = mat4.create();
+            mat4.mul(this.tmp, tmpMat, this.fence2);
+            this.fence2.draw(posAttr, colAttr, modelUnif, this.tmp);
+            fence2.draw(posAttr, colAttr, modelUnif, tmpMat);
+            xPos = xPos + 0.1;
+            yPos = yPos + 0.1;
+        }
+    }
+
 }
 
 function draw3D() {

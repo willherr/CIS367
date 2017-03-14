@@ -7,7 +7,7 @@ class Court {
 
 	constructor (gl) {
 
-		this.floor = new TruncatedCone2(gl, 3, 3, 0.01, 4, 2);
+		this.floor = new TruncatedCone3(gl, 3, 3, 0.01, 4, 2);
 
 		this.courtTransform = mat4.create();
 		let moveCourt      = vec3.fromValues(0, 0, -.5);

@@ -14,8 +14,8 @@ class Shooter {
 		let jersey2 = vec3.fromValues(0/255, 191/255, 255/255);
 		let jersey3 = vec3.fromValues(176/255, 196/255, 222/255);
 
-		let pants1 = vec3.fromValues(0, 0, 139/255);
-		let pants2 = vec3.fromValues(0, 0, 128/255);
+		let pants1 = vec3.fromValues(0, 0, 150/255);
+		let pants2 = vec3.fromValues(0, 0, 110/255);
 
 		this.head = new RecursiveSphere(gl, .03, 5, skin1, skin2);
 		this.body = new Cube(gl, .07, 1, jersey1, jersey2, jersey3);
