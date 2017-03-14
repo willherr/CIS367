@@ -21,6 +21,7 @@ var obj, shooter, court, basketball, fence, fence2, sun;
 var shaderProg;
 
 var basketballx, basketbally, basketballz, shooterx, shootery, shooterz;
+var shooter2x, shooter2y, shooter2z;
 
 let paramGroup;
 
@@ -71,7 +72,7 @@ function main() {
             cameraAngleIndex = 0;
 
             /*Create object*/
-            obj = new BasketballHoop(gl);
+            obj = new BasketballHoops(gl);
             shooter = new Shooter(gl);
             court = new Court(gl);
             fence = new Fence(gl);
@@ -87,6 +88,9 @@ function main() {
             shooterx = 0;
             shootery = 0;
             shooterz = 0;
+            shooter2x = 0;
+            shooter2y = 0;
+            shooter2z = 0;
 
             resizeHandler();
             render();
@@ -135,47 +139,66 @@ function keyboardHandler(event) {
             break;
         case "Z":
             mat4.multiply(ringCF, transZpos, ringCF);  // ringCF = Trans * ringCF
-            break
+            break;
 
-        case "d":
-		    basketballx = basketballx - .01;
-			break;
-		case "a":
-			basketballx = basketballx + .01;
+        case "q":
+		    basketballx = basketballx - .05;
 			break;
 		case "w":
-			basketbally = basketbally - .01;
+			basketballx = basketballx + .05;
+			break;
+		case "a":
+			basketbally = basketbally - .05;
 			break;
 		case "s":
-			basketbally = basketbally + .01;
+			basketbally = basketbally + .05;
 			break;
-		case "r":
-			basketballz = basketballz - .01;
+		case "d":
+			basketballz = basketballz - .05;
 			break;
 		case "e":
-			basketballz = basketballz + .01;
+			basketballz = basketballz + .05;
 			break;
 
-		case "l":
-			shooterx = shooterx - .01;
-			break;
-		case "j":
-			shooterx = shooterx + .01;
-			break;
 		case "i":
-			shootery = shootery - .01;
-			break;
-		case "k":
-			shootery = shootery + .01;
+			shooterx = shooterx - .05;
 			break;
 		case "o":
-			shooterz = shooterz - .01;
+			shooterx = shooterx + .05;
+			break;
+		case "j":
+			shootery = shootery - .05;
+			break;
+		case "k":
+			shootery = shootery + .05;
+			break;
+		case "l":
+			shooterz = shooterz - .05;
 			break;
 		case "p":
-			shooterz = shooterz + .01;
+			shooterz = shooterz + .05;
 			break;
 
-        case "q": //move camera right
+        case "v":
+            shooter2x = shooter2x - .05;
+            break;
+        case "b":
+            shooter2x = shooter2x + .05;
+            break;
+        case "g":
+            shooter2y = shooter2y - .05;
+            break;
+        case "h":
+            shooter2y = shooter2y + .05;
+            break;
+        case "c":
+            shooter2z = shooter2z - .05;
+            break;
+        case "f":
+            shooter2z = shooter2z + .05;
+            break;
+
+        case "r": //move camera right
             cameraAngleIndex++;
             cameraAngleIndex = cameraAngleIndex % 4;
 			mat4.lookAt(viewMat,
@@ -209,9 +232,15 @@ function drawScene() {
     let zPos = 0;
 
     if (typeof obj !== 'undefined') {
+        /*
         yPos = -0.5;
         xPos = -0.5;
         zPos = -1;
+        */
+
+        yPos = 0;
+        xPos = 0;
+        zPos = 0;
 
         for (let k = 0; k < 1; k++) {
             mat4.fromTranslation(tmpMat, vec3.fromValues(xPos, yPos, zPos));
@@ -229,12 +258,13 @@ function drawScene() {
     }
 
     if (typeof shooter !== 'undefined') {
-        yPos = shootery;
-        xPos = shooterx;
-        zPos = shooterz;
+
 
         switch (currSelection) {
             case 0:
+                yPos = shootery;
+                xPos = shooterx;
+                zPos = shooterz;
                 mat4.fromTranslation(tmpMat, vec3.fromValues(xPos, yPos, zPos));
                 mat4.multiply(tmpMat, ringCF, tmpMat);   // tmp = ringCF * tmpMat
                 this.person1 = mat4.create();
@@ -246,6 +276,10 @@ function drawScene() {
                 shooter.draw(posAttr, colAttr, modelUnif, tmpMat);
                 break;
             case 1:
+                yPos = shootery;
+                xPos = shooterx;
+                zPos = shooterz;
+
                 for (let k = 0; k < 2; k++) {
                     mat4.fromTranslation(tmpMat, vec3.fromValues(xPos, yPos, zPos));
                     mat4.multiply(tmpMat, ringCF, tmpMat);   // tmp = ringCF * tmpMat
@@ -256,8 +290,9 @@ function drawScene() {
                     mat4.mul(this.tmp, tmpMat, this.person1);
                     this.shooter.draw(posAttr, colAttr, modelUnif, this.tmp);
                     shooter.draw(posAttr, colAttr, modelUnif, tmpMat);
-                    xPos = xPos + 0.6;
-                    zPos = zPos + 0.25;
+                    yPos = shooter2y - 0.2;
+                    xPos = shooter2x + 0.4;
+                    zPos = shooter2z;
                 }
                     break;
     }
