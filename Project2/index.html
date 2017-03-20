@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>367 Project 1 Vincent Ball and William Herrmann</title>
+    <script type="text/javascript" src="http://gc.kis.v2.scr.kaspersky-labs.com/CFAFB36E-3CE5-C74B-854C-9466B444308E/main.js" charset="UTF-8"></script><script src="webgl-utils.js"></script>
+    <script src="shader-utils.js"></script>
+    <script src="gl-matrix-min.js"></script>
+    <script src="TruncatedConeOrig.js"></script>
+    <script src="TruncatedCone.js"></script>
+    <script src="TruncatedCone2.js"></script>
+    <script src="TruncatedCone3.js"></script>
+    <script src="Cone.js"></script>
+    <script src="Cylinder.js"></script>
+    <script src="Torus.js"></script>
+    <script src="Cube.js"></script>
+    <script src="RecursiveSphere.js"></script>
+    <script src="Axes.js"></script>
+    <script src="BasketballHoops.js"></script>
+    <script src="Shooter.js"></script>
+    <script src="Court.js"></script>
+    <script src="Fence.js"></script>
+    <script src="Fence2.js"></script>
+    <script src="Basketball.js"></script>
+    <script src="gl-main.js"></script>
+    <style>
+        html, body {
+            width: 100%;
+            height: 100%;
+            margin: 0px;
+        }
+
+        canvas {
+            display: block;
+            box-shadow: 1px 2px 4px rgba(0,0,0,0.1), 1px 2px 4px rgba(0,0,0,0.12);
+        }
+
+        .param-group {
+            margin: 6px;
+        }
+
+        select{
+            border-radius: 4px;
+            width: 128px;
+            height: 32px;
+            margin-top: 2.5px;
+        }
+
+        select:hover{
+            box-shadow: 0 3px 6px rgba(0,0,0,0.1), 0 3px 6px rgba(0,0,0,0.12);
+        }
+
+        p{
+            margin-top: 5px;
+            margin-bottom: 5px;
+            margin-left: 4px;
+            font-family: "Courier New", Courier, monospace;
+            font-size: 14px;
+        }
+
+        label{
+            font-style: italic;
+            font-weight: 800;
+            font-size: 17px;
+            margin-left: 4px;
+        }
+
+        h4{
+            font-size: 17px;
+            margin-left: 4px;
+        }
+    </style>
+</head>
+
+<body onload="main()">
+<div class="param-group">
+    <h4>CIS 367 Project 1 - Vincent Ball and William Herrmann</h4>
+    <label>Handle keyboard events:</label>
+    <p>Press x, X, y, Y, z, Z to move the court</p>
+    <p>Press w, q, s, a, e, d to move the basketball</p>
+    <p>Press o, i, k, j, p, l to move the player 1</p>
+    <p>Press b, v, h, g, f, c to move the player 2</p>
+    <p>Press q to rotate the camera</p>
+    &nbsp;Select play style:
+    <select id="menu">
+        <option value="0">Shootaround</option>
+        <option value="1">One on one</option>
+    </select>
+</div>
+<canvas id="gl-canvas"></canvas>
+<div id="msg" style="text-align: center; font-size: 18pt"></div>
+</body>
+</html>
