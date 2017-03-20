@@ -78,6 +78,7 @@ function main() {
             fence = new Fence(gl);
             fence2 = new Fence2(gl);
             basketball = new Basketball(gl);
+            sun = new Sun(gl);
 
             globalAxes = new Axes(gl);
             coneSpinAngle = 0;
@@ -256,6 +257,25 @@ function drawScene() {
 
         }
     }
+
+	if (typeof sun !== 'undefined') {
+
+		yPos = 0;
+		xPos = 0;
+		zPos = 0;
+
+		for (let k = 0; k < 1; k++) {
+			mat4.fromTranslation(tmpMat, vec3.fromValues(xPos, yPos, zPos));
+			mat4.multiply(tmpMat, ringCF, tmpMat);   // tmp = ringCF * tmpMat
+			this.sunMat = mat4.create();
+			this.tmp = mat4.create();
+			let move = vec3.fromValues(1, 1, 1);
+			mat4.translate(this.sunMat, this.sunMat, move);
+			mat4.mul(this.tmp, tmpMat, this.hoop);
+			this.sun.draw(posAttr, colAttr, modelUnif, this.tmp);
+			sun.draw(posAttr, colAttr, modelUnif, tmpMat);
+		}
+	}
 
     if (typeof shooter !== 'undefined') {
 
