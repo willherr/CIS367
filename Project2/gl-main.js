@@ -8,7 +8,7 @@ var orthoProjMat, persProjMat, viewMat, topViewMat, ringCF;
 var axisBuff, tmpMat;
 var globalAxes;
 var currSelection = 0;
-const RING_ANGULAR_SPEED = 5;  /* 30 RPM (revolutions/min) */
+const RING_ANGULAR_SPEED = 12;  /* 30 RPM (revolutions/min) */
 
 /* Vertex shader attribute variables */
 var posAttr, colAttr;
@@ -229,7 +229,7 @@ function render() {
     let now = Date.now();
     let elapse = (now - timeStamp)/1000; /* convert to second */
     timeStamp = now;
-    let ringSpinAngle = elapse * (RING_ANGULAR_SPEED / 60) * Math.PI * 2;
+    let ringSpinAngle = elapse * (RING_ANGULAR_SPEED / 60) * Math.PI;
     mat4.rotateX (armCFs[0], armCFs[0], ringSpinAngle);
     mat4.rotateY (armCFs[0], armCFs[0], ringSpinAngle);
 
