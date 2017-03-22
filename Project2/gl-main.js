@@ -8,6 +8,7 @@ var orthoProjMat, persProjMat, viewMat, topViewMat, ringCF;
 var axisBuff, tmpMat;
 var globalAxes;
 var currSelection = 0;
+const RING_ANGULAR_SPEED = 5;  /* 30 RPM (revolutions/min) */
 
 /* Vertex shader attribute variables */
 var posAttr, colAttr;
@@ -22,6 +23,8 @@ var shaderProg;
 
 var basketballx, basketbally, basketballz, shooterx, shootery, shooterz;
 var shooter2x, shooter2y, shooter2z;
+var timeStamp;
+let armCFs = [];
 
 let paramGroup;
 
@@ -77,7 +80,11 @@ function main() {
             court = new Court(gl);
             fence = new Fence(gl);
             fence2 = new Fence2(gl);
+
             basketball = new Basketball(gl);
+            armCFs.push( mat4.create() );
+            timeStamp = Date.now();
+
             sun = new Sun(gl);
             lamp = new Lamp(gl);
 
@@ -219,6 +226,13 @@ function render() {
     draw3D();
     //drawTopView(); /* looking at the XY plane, Z-axis points towards the viewer */
     // coneSpinAngle += 1;  /* add 1 degree */
+    let now = Date.now();
+    let elapse = (now - timeStamp)/1000; /* convert to second */
+    timeStamp = now;
+    let ringSpinAngle = elapse * (RING_ANGULAR_SPEED / 60) * Math.PI * 2;
+    mat4.rotateX (armCFs[0], armCFs[0], ringSpinAngle);
+    mat4.rotateY (armCFs[0], armCFs[0], ringSpinAngle);
+
     requestAnimationFrame(render);
 }
 
@@ -344,7 +358,7 @@ function drawScene() {
 
 		for (let k = 0; k < 1; k++) {
 			mat4.fromTranslation(tmpMat, vec3.fromValues(xPos, yPos, zPos));
-			mat4.multiply(tmpMat, ringCF, tmpMat);   // tmp = ringCF * tmpMat
+            mat4.multiply(tmpMat, armCFs[0], tmpMat);   // tmp = ringCF * tmpMat
 			this.basketball_ = mat4.create();
 			this.tmp = mat4.create();
 			mat4.mul (this.tmp, tmpMat, this.basketball_);

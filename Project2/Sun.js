@@ -6,10 +6,10 @@ class Sun {
 		let orange = vec3.fromValues(255 / 255, 115 / 255, 0 / 255);
 		let yellow = vec3.fromValues(255 / 255, 255 / 255, 0 / 255);
 
-		this.sunObj = new RecursiveSphere(gl, .1, 6, orange, yellow);
+		this.sunObj = new RecursiveSphere(gl, .2, 6, orange, yellow);
 
 		this.sunObjTransform = mat4.create();
-		let moveSunObj = vec3.fromValues(-6, -2, 1);
+		let moveSunObj = vec3.fromValues(-7, -1.3, 1);
 		mat4.translate(this.sunObjTransform, this.sunObjTransform, moveSunObj);
 
 		this.tmp = mat4.create();
