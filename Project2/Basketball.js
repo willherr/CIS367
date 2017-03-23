@@ -9,7 +9,7 @@ class Basketball {
 		this.ball = new RecursiveSphere(gl, .09, 5, orange1, orange2);
 
 		this.ballTransform = mat4.create();
-		let moveBall       = vec3.fromValues(.65, -.6, 1.4);
+        let moveBall       = vec3.fromValues(0.2, -0.2, 0.4);
 		mat4.translate(this.ballTransform, this.ballTransform, moveBall);
 
 		this.tmp = mat4.create();

@@ -8,6 +8,7 @@ var orthoProjMat, persProjMat, viewMat, topViewMat, ringCF;
 var axisBuff, tmpMat;
 var globalAxes;
 var currSelection = 0;
+var currSelection2 = 0;
 const RING_ANGULAR_SPEED = 12;  /* 30 RPM (revolutions/min) */
 
 /* Vertex shader attribute variables */
@@ -30,8 +31,13 @@ let paramGroup;
 
 function main() {
     glCanvas = document.getElementById("gl-canvas");
+
     let menu = document.getElementById("menu");
     menu.addEventListener("change", menuSelected);
+
+    let menu2 = document.getElementById("menu2");
+    menu2.addEventListener("change", menuSelected2);
+
     textOut = document.getElementById("msg");
     gl = WebGLUtils.setupWebGL(glCanvas, null);
     axisBuff = gl.createBuffer();
@@ -76,7 +82,6 @@ function main() {
 
             /*Create object*/
             obj = new BasketballHoops(gl);
-            shooter = new Shooter(gl);
             court = new Court(gl);
             fence = new Fence(gl);
             fence2 = new Fence2(gl);
@@ -84,6 +89,9 @@ function main() {
             basketball = new Basketball(gl);
             armCFs.push( mat4.create() );
             timeStamp = Date.now();
+
+            shooter = new Shooter(gl);
+            armCFs.push(mat4.clone(tmpMat)); // important to clone() so we push a new matrix cd
 
             sun = new Sun(gl);
             lamp = new Lamp(gl);
@@ -224,6 +232,11 @@ function keyboardHandler(event) {
 function render() {
     gl.clear(gl.DEPTH_BUFFER_BIT | gl.COLOR_BUFFER_BIT);
     draw3D();
+    switch(currSelection2){
+        case 2:
+            draw3D();
+            break;
+    }
     //drawTopView(); /* looking at the XY plane, Z-axis points towards the viewer */
     // coneSpinAngle += 1;  /* add 1 degree */
     let now = Date.now();
@@ -312,43 +325,56 @@ function drawScene() {
 
     if (typeof shooter !== 'undefined') {
 
-
-        switch (currSelection) {
-            case 0:
-                yPos = shootery;
-                xPos = shooterx;
-                zPos = shooterz;
-                mat4.fromTranslation(tmpMat, vec3.fromValues(xPos, yPos, zPos));
-                mat4.multiply(tmpMat, ringCF, tmpMat);   // tmp = ringCF * tmpMat
-                this.person1 = mat4.create();
-                this.tmp = mat4.create();
-                let scalePerson1 = vec3.fromValues(4, 4, 4);
-                mat4.scale(this.person1, this.person1, scalePerson1);
-                mat4.mul(this.tmp, tmpMat, this.person1);
-                this.shooter.draw(posAttr, colAttr, modelUnif, this.tmp);
-                shooter.draw(posAttr, colAttr, modelUnif, tmpMat);
-                break;
-            case 1:
-                yPos = shootery;
-                xPos = shooterx;
-                zPos = shooterz;
-
-                for (let k = 0; k < 2; k++) {
+         switch (currSelection) {
+                case 0:
+                    yPos = shootery;
+                    xPos = shooterx;
+                    zPos = shooterz;
                     mat4.fromTranslation(tmpMat, vec3.fromValues(xPos, yPos, zPos));
-                    mat4.multiply(tmpMat, ringCF, tmpMat);   // tmp = ringCF * tmpMat
+                    mat4.multiply(tmpMat, armCFs[1], tmpMat);   // tmp = ringCF * tmpMat
                     this.person1 = mat4.create();
                     this.tmp = mat4.create();
                     let scalePerson1 = vec3.fromValues(4, 4, 4);
+
+                    switch(currSelection2){
+                        case 0:
+                            mat4.translate(armCFs[1], armCFs[1], vec3.fromValues(0.75/100, -0.7/100, 0));
+                            break;
+
+                        case 1:
+                            mat4.translate(armCFs[1], armCFs[1], vec3.fromValues(0/100, 0/100, 0));
+                            break;
+
+                    }
+                    //mat4.translate(armCFs[1], armCFs[1], vec3.fromValues(0.75/100, -0.7/100, 0));
+
+
                     mat4.scale(this.person1, this.person1, scalePerson1);
                     mat4.mul(this.tmp, tmpMat, this.person1);
                     this.shooter.draw(posAttr, colAttr, modelUnif, this.tmp);
                     shooter.draw(posAttr, colAttr, modelUnif, tmpMat);
-                    yPos = shooter2y - 0.2;
-                    xPos = shooter2x + 0.4;
-                    zPos = shooter2z;
-                }
                     break;
-    }
+                case 1:
+                    yPos = shootery;
+                    xPos = shooterx;
+                    zPos = shooterz;
+
+                    for (let k = 0; k < 2; k++) {
+                        mat4.fromTranslation(tmpMat, vec3.fromValues(xPos, yPos, zPos));
+                        mat4.multiply(tmpMat, ringCF, tmpMat);   // tmp = ringCF * tmpMat
+                        this.person1 = mat4.create();
+                        this.tmp = mat4.create();
+                        let scalePerson1 = vec3.fromValues(4, 4, 4);
+                        mat4.scale(this.person1, this.person1, scalePerson1);
+                        mat4.mul(this.tmp, tmpMat, this.person1);
+                        this.shooter.draw(posAttr, colAttr, modelUnif, this.tmp);
+                        shooter.draw(posAttr, colAttr, modelUnif, tmpMat);
+                        yPos = shooter2y - 0.2;
+                        xPos = shooter2x + 0.4;
+                        zPos = shooter2z;
+                    }
+                    break;
+            }
 }
 
 	if (typeof basketball !== 'undefined') {
@@ -359,7 +385,30 @@ function drawScene() {
 		for (let k = 0; k < 1; k++) {
 			mat4.fromTranslation(tmpMat, vec3.fromValues(xPos, yPos, zPos));
             mat4.multiply(tmpMat, armCFs[0], tmpMat);   // tmp = ringCF * tmpMat
-			this.basketball_ = mat4.create();
+
+            //let sec = Date.now()/1000;
+            let d = new Date(); // for now
+            let seconds = d.getSeconds();
+            let time = seconds + 2;
+
+                let now = Date.now();
+                let elapse = (now - timeStamp) / 1000;
+                /* convert to second */
+                timeStamp = now + 1;
+                let ringSpinAngle = elapse * (RING_ANGULAR_SPEED / 60) * Math.PI;
+                switch(currSelection2) {
+                    case 0:
+                        mat4.translate(armCFs[0], armCFs[0], vec3.fromValues(0.75 / 100, -0.7 / 100, 0));
+                        break;
+                    case 1:
+                        mat4.translate(armCFs[0], armCFs[0], vec3.fromValues(0 / 100, 0 / 100, 0));
+                        break;
+                }
+                //mat4.rotateX(armCFs[0], armCFs[0], ringSpinAngle);
+                //mat4.rotateY(armCFs[0], armCFs[0], ringSpinAngle);
+                // mat4.translate(armCFs[0], armCFs[0], vec3.fromValues(-1/100, 0, 0));
+
+            this.basketball_ = mat4.create();
 			this.tmp = mat4.create();
 			mat4.mul (this.tmp, tmpMat, this.basketball_);
 			this.basketball.draw(posAttr, colAttr, modelUnif, this.tmp);
@@ -435,6 +484,165 @@ function drawScene() {
 
 }
 
+function drawBasketball(){
+    if (typeof basketball !== 'undefined') {
+        yPos = basketbally;
+        xPos = basketballx;
+        zPos = basketballz;
+
+            mat4.fromTranslation(tmpMat, vec3.fromValues(xPos, yPos, zPos));
+            mat4.multiply(tmpMat, armCFs[0], tmpMat);   // tmp = ringCF * tmpMat
+
+            let now = Date.now();
+            let elapse = (now - timeStamp) / 1000;
+            /* convert to second */
+            timeStamp = now + 1;
+            let ringSpinAngle = elapse * (RING_ANGULAR_SPEED / 60) * Math.PI;
+
+            //mat4.translate(armCFs[0], armCFs[0], vec3.fromValues(-0.75/100, 0.7/100, 0));
+            switch (currSelection2) {
+                case 0:
+                    mat4.translate(armCFs[0], armCFs[0], vec3.fromValues(-0.75/100, 0.7/100, 0));
+                    break;
+                case 1:
+                    mat4.translate(armCFs[0], armCFs[0], vec3.fromValues(0.0 / 100, 0 / 100, 0 / 100));
+
+            }
+            //mat4.rotateX(armCFs[0], armCFs[0], -ringSpinAngle);
+            //mat4.rotateY(armCFs[0], armCFs[0], -ringSpinAngle);
+
+            this.basketball_ = mat4.create();
+            this.tmp = mat4.create();
+            mat4.mul (this.tmp, tmpMat, this.basketball_);
+            this.basketball.draw(posAttr, colAttr, modelUnif, this.tmp);
+            basketball.draw(posAttr, colAttr, modelUnif, tmpMat);
+    }
+}
+
+function drawBasketballUp(){
+    if (typeof basketball !== 'undefined') {
+        yPos = basketbally;
+        xPos = basketballx;
+        zPos = basketballz;
+
+        mat4.fromTranslation(tmpMat, vec3.fromValues(xPos, yPos, zPos));
+        mat4.multiply(tmpMat, armCFs[0], tmpMat);   // tmp = ringCF * tmpMat
+
+        let now = Date.now();
+        let elapse = (now - timeStamp) / 1000;
+        /* convert to second */
+        timeStamp = now + 1;
+        let ringSpinAngle = elapse * (RING_ANGULAR_SPEED / 60) * Math.PI * 2;
+
+        switch(currSelection2){
+            case 0:
+                mat4.translate(armCFs[0], armCFs[0], vec3.fromValues(0.1 / 100, -0.1 / 100, 0.8 / 100));
+                mat4.rotateX(armCFs[0], armCFs[0], ringSpinAngle);
+                mat4.rotateY(armCFs[0], armCFs[0], ringSpinAngle);
+            break;
+            case 1:
+                mat4.translate(armCFs[0], armCFs[0], vec3.fromValues(0 / 100, 0 / 100, 0 / 100));
+                mat4.rotateX(armCFs[0], armCFs[0], -ringSpinAngle);
+                mat4.rotateY(armCFs[0], armCFs[0], -ringSpinAngle);
+        }
+
+        //mat4.rotateX(armCFs[0], armCFs[0], ringSpinAngle);
+        //mat4.rotateX(armCFs[0], armCFs[0], -ringSpinAngle);
+        //mat4.rotateY(armCFs[0], armCFs[0], -ringSpinAngle);
+
+        this.basketball_ = mat4.create();
+        this.tmp = mat4.create();
+        mat4.mul (this.tmp, tmpMat, this.basketball_);
+        this.basketball.draw(posAttr, colAttr, modelUnif, this.tmp);
+        basketball.draw(posAttr, colAttr, modelUnif, tmpMat);
+    }
+}
+
+function drawBasketballDown(){
+    if (typeof basketball !== 'undefined') {
+        yPos = basketbally;
+        xPos = basketballx;
+        zPos = basketballz;
+
+        mat4.fromTranslation(tmpMat, vec3.fromValues(xPos, yPos, zPos));
+        mat4.multiply(tmpMat, armCFs[0], tmpMat);   // tmp = ringCF * tmpMat
+
+        let now = Date.now();
+        let elapse = (now - timeStamp) / 1000;
+        /* convert to second */
+        timeStamp = now + 1;
+        let ringSpinAngle = elapse * (RING_ANGULAR_SPEED / 60) * Math.PI * 2;
+
+        switch (currSelection2) {
+            case 0:
+                mat4.translate(armCFs[0], armCFs[0], vec3.fromValues(0.05 / 100, 0 / 100, -1.7 / 100));
+                break;
+            case 1:
+                mat4.translate(armCFs[0], armCFs[0], vec3.fromValues(0.0 / 100, 0 / 100, 0 / 100));
+
+        }
+
+        this.basketball_ = mat4.create();
+        this.tmp = mat4.create();
+        mat4.mul (this.tmp, tmpMat, this.basketball_);
+        this.basketball.draw(posAttr, colAttr, modelUnif, this.tmp);
+        basketball.draw(posAttr, colAttr, modelUnif, tmpMat);
+    }
+}
+
+function drawplayers() {
+    if (typeof shooter !== 'undefined') {
+        switch (currSelection) {
+            case 0:
+                yPos = shootery;
+                xPos = shooterx;
+                zPos = shooterz;
+                mat4.fromTranslation(tmpMat, vec3.fromValues(xPos, yPos, zPos));
+                mat4.multiply(tmpMat, armCFs[1], tmpMat);   // tmp = ringCF * tmpMat
+                this.person1 = mat4.create();
+                this.tmp = mat4.create();
+                let scalePerson1 = vec3.fromValues(4, 4, 4);
+
+                //mat4.translate(armCFs[1], armCFs[1], vec3.fromValues(-0.75 / 100, 0.7 / 100, 0));
+                switch(currSelection2){
+                    case 0:
+                        mat4.translate(armCFs[1], armCFs[1], vec3.fromValues(-0.75/100, 0.7/100, 0));
+                        break;
+
+                    case 1:
+                        mat4.translate(armCFs[1], armCFs[1], vec3.fromValues(0.0/100, 0/100, 0));
+                        break;
+                }
+
+                mat4.scale(this.person1, this.person1, scalePerson1);
+                mat4.mul(this.tmp, tmpMat, this.person1);
+                this.shooter.draw(posAttr, colAttr, modelUnif, this.tmp);
+                shooter.draw(posAttr, colAttr, modelUnif, tmpMat);
+                break;
+            case 1:
+                yPos = shootery;
+                xPos = shooterx;
+                zPos = shooterz;
+
+                for (let k = 0; k < 2; k++) {
+                    mat4.fromTranslation(tmpMat, vec3.fromValues(xPos, yPos, zPos));
+                    mat4.multiply(tmpMat, ringCF, tmpMat);   // tmp = ringCF * tmpMat
+                    this.person1 = mat4.create();
+                    this.tmp = mat4.create();
+                    let scalePerson1 = vec3.fromValues(4, 4, 4);
+                    mat4.scale(this.person1, this.person1, scalePerson1);
+                    mat4.mul(this.tmp, tmpMat, this.person1);
+                    this.shooter.draw(posAttr, colAttr, modelUnif, this.tmp);
+                    shooter.draw(posAttr, colAttr, modelUnif, tmpMat);
+                    yPos = shooter2y - 0.2;
+                    xPos = shooter2x + 0.4;
+                    zPos = shooter2z;
+                }
+                break;
+        }
+    }
+}
+
 function draw3D() {
     /* We must update the projection and view matrices in the shader */
     gl.uniformMatrix4fv(projUnif, false, persProjMat);
@@ -442,6 +650,11 @@ function draw3D() {
     gl.viewport(0, 0, glCanvas.width, glCanvas.height);
     //gl.viewport(0, 0, glCanvas.width/2, glCanvas.height); //original
     drawScene();
+    setTimeout(drawBasketball, 1200);
+    setTimeout(drawplayers, 1200);
+    setTimeout(drawBasketballUp, 1500);
+    setTimeout(drawBasketballDown, 3500);
+    //setTimeout(stopBasketball, 5300);
 }
 
 function drawTopView() {
@@ -458,4 +671,12 @@ function menuSelected(ev) {
     /*paramGroup[sel].hidden = false;*/
     currSelection = sel;
     console.log("New selection is ", currSelection);
+}
+
+function menuSelected2(ev) {
+    let sel2 = ev.currentTarget.selectedIndex;
+    /*paramGroup[currSelection].hidden = true;*/
+    /*paramGroup[sel].hidden = false;*/
+    currSelection2 = sel2;
+    console.log("New selection is ", currSelection2);
 }
