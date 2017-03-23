@@ -57,8 +57,26 @@ class Shooter {
 
 	draw (vertexAttr, colorAttr, modelUniform, coordFrame) {
 
+		gl.uniform3fv(objTintUnif, vec3.fromValues(222/255, 184/255, 135/255));
+		gl.uniform1f(ambCoeffUnif, 1);
+		gl.uniform1f(diffCoeffUnif, 1);
+		gl.uniform1f(specCoeffUnif, .5);
+		gl.uniform1f(shininessUnif, 20);
+
 		mat4.mul (this.tmp, coordFrame, this.headTransform);
 		this.head.draw(vertexAttr, colorAttr, modelUniform, this.tmp);
+
+		mat4.mul (this.tmp, coordFrame, this.larmTransform);
+		this.larm.draw(vertexAttr, colorAttr, modelUniform, this.tmp);
+
+		mat4.mul (this.tmp, coordFrame, this.rarmTransform);
+		this.rarm.draw(vertexAttr, colorAttr, modelUniform, this.tmp);
+
+		gl.uniform3fv(objTintUnif, vec3.fromValues(0, 0, 150/255));
+		gl.uniform1f(ambCoeffUnif, 1);
+		gl.uniform1f(diffCoeffUnif, .5);
+		gl.uniform1f(specCoeffUnif, .1);
+		gl.uniform1f(shininessUnif, 5);
 
 		mat4.mul (this.tmp, coordFrame, this.llegTransform);
 		this.lleg.draw(vertexAttr, colorAttr, modelUniform, this.tmp);
@@ -66,11 +84,11 @@ class Shooter {
 		mat4.mul (this.tmp, coordFrame, this.rlegTransform);
 		this.rleg.draw(vertexAttr, colorAttr, modelUniform, this.tmp);
 
-		mat4.mul (this.tmp, coordFrame, this.larmTransform);
-		this.larm.draw(vertexAttr, colorAttr, modelUniform, this.tmp);
-
-		mat4.mul (this.tmp, coordFrame, this.rarmTransform);
-		this.rarm.draw(vertexAttr, colorAttr, modelUniform, this.tmp);
+		gl.uniform3fv(objTintUnif, vec3.fromValues(30/255, 144/255, 255/255));
+		gl.uniform1f(ambCoeffUnif, 1);
+		gl.uniform1f(diffCoeffUnif, .5);
+		gl.uniform1f(specCoeffUnif, .1);
+		gl.uniform1f(shininessUnif, 15);
 
 		mat4.mul (this.tmp, coordFrame, this.bodyTransform);
 		this.body.draw(vertexAttr, colorAttr, modelUniform, this.tmp);

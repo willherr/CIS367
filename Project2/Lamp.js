@@ -11,7 +11,7 @@ class Lamp {
 		let silver2 = vec3.fromValues(211 / 255, 211 / 255, 211 / 255);
 
 		let yellow1 = vec3.fromValues(255 / 255, 255 / 255, 224 / 255);
-		let yellow2 = vec3.fromValues(255 / 255, 250 / 255, 205 / 255);
+		let yellow2 = vec3.fromValues(255 / 255, 255 / 255, 224 / 255);
 
 		this.lightPole = new Cylinder(gl, .05, .05, 1, 30, silver1, silver2);
 		this.lightBulb = new RecursiveSphere(gl, .08, 5, yellow1, yellow2);
@@ -32,10 +32,25 @@ class Lamp {
 
 	draw(vertexAttr, colorAttr, modelUniform, coordFrame) {
 
+		gl.uniform3fv(objTintUnif, vec3.fromValues(185/255, 185/255, 185/255));
+		gl.uniform1f(ambCoeffUnif, 1);
+		gl.uniform1f(diffCoeffUnif, 1);
+		gl.uniform1f(specCoeffUnif, .8);
+		gl.uniform1f(shininessUnif, 100);
+
 		mat4.mul(this.tmp, coordFrame, this.lightPoleTransform);
 		this.lightPole.draw(vertexAttr, colorAttr, modelUniform, this.tmp);
 
+		gl.disableVertexAttribArray(normalAttr);
+		gl.enableVertexAttribArray(colAttr);
+		gl.uniform1i(useLightingUnif, false);
+		gl.uniform3fv(objTintUnif, vec3.fromValues(1, 1, 0));
+		gl.uniform1f(ambCoeffUnif, 1);
+		gl.uniform1f(diffCoeffUnif, 1);
+		gl.uniform1f(specCoeffUnif, 1);
+		gl.uniform1f(shininessUnif, 1);
+
 		mat4.mul(this.tmp, coordFrame, this.lightBulbTransform);
-		this.lightBulb.draw(vertexAttr, colorAttr, modelUniform, this.tmp);
+		this.lightBulb.draw(vertexAttr, colAttr, modelUniform, this.tmp);
 	}
 }

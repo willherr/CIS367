@@ -1,31 +1,33 @@
 /**
- * Created by Hans Dulimarta on 1/31/17.
+ * Project 1 and 2
  */
 
 var gl;
 var glCanvas, textOut;
-var orthoProjMat, persProjMat, viewMat, topViewMat, ringCF;
+var orthoProjMat, persProjMat, viewMat, lightCF, ringCF;
 var axisBuff, tmpMat;
-var globalAxes;
 var currSelection = 0;
 var currSelection2 = 0;
 const RING_ANGULAR_SPEED = 12;  /* 30 RPM (revolutions/min) */
 
 /* Vertex shader attribute variables */
-var posAttr, colAttr;
+var posAttr, colAttr, normalAttr;
 
 /* Shader uniform variables */
-var projUnif, viewUnif, modelUnif;
+var projUnif, viewUnif, modelUnif, useLightingUnif, objTintUnif, ambCoeffUnif, diffCoeffUnif, specCoeffUnif, shininessUnif, isEnabledUnif;
 
 const IDENTITY = mat4.create();
-var coneSpinAngle, cameraAngles, cameraAngleIndex;
+var cameraAngles, cameraAngleIndex;
 var obj, shooter, court, basketball, fence, fence2, sun, lamp;
 var shaderProg;
+var lightingComponentEnabled = [true, true, true];
 
-var basketballx, basketbally, basketballz, shooterx, shootery, shooterz;
+var sunLightPos, lampLightPos;
+
+var basketballx, basketbally, basketballz, shooterx, shootery, shooterz, sunx, suny, sunz, lampx, lampy, lampz;
 var shooter2x, shooter2y, shooter2z;
-var timeStamp;
-let armCFs = [];
+
+var lampLightCheck, sunLightCheck;
 
 let paramGroup;
 
@@ -61,12 +63,25 @@ function main() {
             projUnif = gl.getUniformLocation(prog, "projection");
             viewUnif = gl.getUniformLocation(prog, "view");
             modelUnif = gl.getUniformLocation(prog, "modelCF");
+
+			normalAttr = gl.getAttribLocation(prog, "vertexNormal");
+			lightPosUnif = gl.getUniformLocation(prog, "lightPosWorld");
+			normalUnif = gl.getUniformLocation(prog, "normalMat");
+			useLightingUnif = gl.getUniformLocation (prog, "useLighting");
+			objTintUnif = gl.getUniformLocation(prog, "objectTint");
+			ambCoeffUnif = gl.getUniformLocation(prog, "ambientCoeff");
+			diffCoeffUnif = gl.getUniformLocation(prog, "diffuseCoeff");
+			specCoeffUnif = gl.getUniformLocation(prog, "specularCoeff");
+			shininessUnif = gl.getUniformLocation(prog, "shininess");
+			isEnabledUnif = gl.getUniformLocation(prog, "isEnabled");
+
             gl.enableVertexAttribArray(posAttr);
             gl.enableVertexAttribArray(colAttr);
             orthoProjMat = mat4.create();
             persProjMat = mat4.create();
             viewMat = mat4.create();
             ringCF = mat4.create();
+            lightCF = mat4.create();
             tmpMat = mat4.create();
             mat4.lookAt(viewMat,
                 vec3.fromValues(2, 2, 2), /* eye */
@@ -80,7 +95,19 @@ function main() {
                 vec3.fromValues(2, -2, 2)];
             cameraAngleIndex = 0;
 
-            /*Create object*/
+			lampLightCheck = document.getElementById("lamp").checked;
+			sunLightCheck  = document.getElementById("sun").checked;
+			sunLightPos = vec3.fromValues(-6, -2, 1);
+			lampLightPos = vec3.fromValues(1.8, -1, -.6);
+
+			gl.uniformMatrix4fv(modelUnif, false, IDENTITY);
+			gl.uniform3fv(lightPosUnif, cameraAngles[cameraAngleIndex]);
+
+
+
+			gl.uniform3iv(isEnabledUnif, lightingComponentEnabled);
+            /*Create objects*/
+			basketball = new Basketball(gl);
             obj = new BasketballHoops(gl);
             court = new Court(gl);
             fence = new Fence(gl);
@@ -96,9 +123,6 @@ function main() {
             sun = new Sun(gl);
             lamp = new Lamp(gl);
 
-            globalAxes = new Axes(gl);
-            coneSpinAngle = 0;
-
             basketballx = 0;
             basketbally = 0;
             basketballz = 0;
@@ -108,6 +132,15 @@ function main() {
             shooter2x = 0;
             shooter2y = 0;
             shooter2z = 0;
+            sunx = 0;
+            suny = 0;
+            sunz = 0;
+            lampx = 0;
+            lampy = 0;
+            lampz = 0;
+
+
+
 
             resizeHandler();
             render();
@@ -132,31 +165,44 @@ function resizeHandler() {
 }
 
 function keyboardHandler(event) {
-    const transXpos = mat4.fromTranslation(mat4.create(), vec3.fromValues( 0.2, 0, 0));
-    const transXneg = mat4.fromTranslation(mat4.create(), vec3.fromValues(-0.2, 0, 0));
-    const transYpos = mat4.fromTranslation(mat4.create(), vec3.fromValues( 0, 0.2, 0));
-    const transYneg = mat4.fromTranslation(mat4.create(), vec3.fromValues( 0,-0.2, 0));
-    const transZpos = mat4.fromTranslation(mat4.create(), vec3.fromValues( 0, 0, 0.2));
-    const transZneg = mat4.fromTranslation(mat4.create(), vec3.fromValues( 0, 0,-0.2));
+    const transXpos = mat4.fromTranslation(mat4.create(), vec3.fromValues( 0.05, 0, 0));
+    const transXneg = mat4.fromTranslation(mat4.create(), vec3.fromValues(-0.05, 0, 0));
+    const transYpos = mat4.fromTranslation(mat4.create(), vec3.fromValues( 0, 0.05, 0));
+    const transYneg = mat4.fromTranslation(mat4.create(), vec3.fromValues( 0,-0.05, 0));
+    const transZpos = mat4.fromTranslation(mat4.create(), vec3.fromValues( 0, 0, 0.05));
+    const transZneg = mat4.fromTranslation(mat4.create(), vec3.fromValues( 0, 0,-0.05));
+    const rotX      = mat4.fromXRotation(mat4.create(), Math.PI/16);
+    const rotY      = mat4.fromYRotation(mat4.create(), Math.PI/16);
+    const rotZ      = mat4.fromZRotation(mat4.create(), Math.PI/16);
+
     switch (event.key) {
         case "x":
-            mat4.multiply(ringCF, transXneg, ringCF);  // ringCF = Trans * ringCF
+            mat4.multiply(viewMat, transXneg, viewMat);  // viewMat = Trans * viewMat
             break;
         case "X":
-            mat4.multiply(ringCF, transXpos, ringCF);  // ringCF = Trans * ringCF
+            mat4.multiply(viewMat, transXpos, viewMat);  // viewMat = Trans * viewMat
             break;
         case "y":
-            mat4.multiply(ringCF, transYneg, ringCF);  // ringCF = Trans * ringCF
+            mat4.multiply(viewMat, transYneg, viewMat);  // viewMat = Trans * viewMat
             break;
         case "Y":
-            mat4.multiply(ringCF, transYpos, ringCF);  // ringCF = Trans * ringCF
+            mat4.multiply(viewMat, transYpos, viewMat);  // viewMat = Trans * viewMat
             break;
         case "z":
-            mat4.multiply(ringCF, transZneg, ringCF);  // ringCF = Trans * ringCF
+            mat4.multiply(viewMat, transZneg, viewMat);  // viewMat = Trans * viewMat
             break;
         case "Z":
-            mat4.multiply(ringCF, transZpos, ringCF);  // ringCF = Trans * ringCF
+            mat4.multiply(viewMat, transZpos, viewMat);  // viewMat = Trans * viewMat
             break;
+		case "1":
+			mat4.multiply(viewMat, rotX, viewMat);
+			break;
+		case "2":
+			mat4.multiply(viewMat, rotY, viewMat);
+			break;
+		case "3":
+			mat4.multiply(viewMat, rotZ, viewMat);
+			break;
 
         case "q":
 		    basketballx = basketballx - .05;
@@ -222,8 +268,48 @@ function keyboardHandler(event) {
 				cameraAngles[cameraAngleIndex], /* eye */
 				vec3.fromValues(0, 0, 0), /* focal point */
 				vec3.fromValues(0, 0, 1)); /* up */
+			gl.uniform3fv(lightPosUnif, cameraAngles[cameraAngleIndex]);
             break;
+
+		case "4":
+			lampx = lampx - .05;
+			break;
+		case "5":
+			lampx = lampx + .05;
+			break;
+		case "6":
+			lampy = lampy - .05;
+			break;
+		case "7":
+			lampy = lampy + .05;
+			break;
+		case "8":
+			lampz = lampz - .05;
+			break;
+		case "9":
+			lampz = lampz+ .05;
+			break;
+
+		case "[":
+			sunx = sunx - .05;
+			break;
+		case "]":
+			sunx = sunx + .05;
+			break;
+		case ";":
+			suny = suny - .05;
+			break;
+		case "'":
+			suny = suny + .05;
+			break;
+		case "-":
+			sunz = sunz - .05;
+			break;
+		case "+":
+			sunz = sunz + .05;
+
     }
+	mat4.lookAt(viewMat);
     textOut.innerHTML = "Court origin (" + ringCF[12].toFixed(1) + ", "
         + ringCF[13].toFixed(1) + ", "
         + ringCF[14].toFixed(1) + ")";
@@ -231,6 +317,8 @@ function keyboardHandler(event) {
 
 function render() {
     gl.clear(gl.DEPTH_BUFFER_BIT | gl.COLOR_BUFFER_BIT);
+	lampLightCheck = document.getElementById("lamp").checked;
+	sunLightCheck  = document.getElementById("sun").checked;
     draw3D();
     switch(currSelection2){
         case 2:
@@ -250,15 +338,29 @@ function render() {
 }
 
 function drawScene() {
-    globalAxes.draw(posAttr, colAttr, modelUnif, IDENTITY);
-    /*
-     let option1 = document.getElementById("option").options[0].value;
-     let option2 = document.getElementById("option").options[1].value;
-     */
+    gl.uniform1i(useLightingUnif, true);
+	gl.disableVertexAttribArray(colAttr);
+	gl.enableVertexAttribArray(normalAttr);
 
     let yPos = 0;
     let xPos = 0;
     let zPos = 0;
+
+	if (typeof basketball !== 'undefined') {
+		yPos = basketbally;
+		xPos = basketballx;
+		zPos = basketballz;
+
+		for (let k = 0; k < 1; k++) {
+			mat4.fromTranslation(tmpMat, vec3.fromValues(xPos, yPos, zPos));
+			mat4.multiply(tmpMat, ringCF, tmpMat);   // tmp = ringCF * tmpMat
+			this.basketball_ = mat4.create();
+			this.tmp = mat4.create();
+			mat4.mul (this.tmp, tmpMat, this.basketball_);
+			this.basketball.draw(posAttr, normalAttr, modelUnif, this.tmp);
+			basketball.draw(posAttr, normalAttr, modelUnif, tmpMat);
+		}
+	}
 
     if (typeof obj !== 'undefined') {
         /*
@@ -280,48 +382,12 @@ function drawScene() {
             //mat4.rotateZ(this.hoop, this.hoop, Math.PI/16);
             mat4.translate(this.hoop, this.hoop, move);
             mat4.mul(this.tmp, tmpMat, this.hoop);
-            this.obj.draw(posAttr, colAttr, modelUnif, this.tmp);
-            obj.draw(posAttr, colAttr, modelUnif, tmpMat);
+            this.obj.draw(posAttr, normalAttr, modelUnif, this.tmp);
+            obj.draw(posAttr, normalAttr, modelUnif, tmpMat);
 
         }
     }
 
-	if (typeof sun !== 'undefined') {
-
-		yPos = 0;
-		xPos = 0;
-		zPos = 0;
-
-		for (let k = 0; k < 1; k++) {
-			mat4.fromTranslation(tmpMat, vec3.fromValues(xPos, yPos, zPos));
-			mat4.multiply(tmpMat, ringCF, tmpMat);   // tmp = ringCF * tmpMat
-			this.sunMat = mat4.create();
-			this.tmp = mat4.create();
-			let move = vec3.fromValues(1, 1, 1);
-			mat4.translate(this.sunMat, this.sunMat, move);
-			mat4.mul(this.tmp, tmpMat, this.sunMat);
-			this.sun.draw(posAttr, colAttr, modelUnif, this.tmp);
-			sun.draw(posAttr, colAttr, modelUnif, tmpMat);
-		}
-	}
-
-	if (typeof lamp !== 'undefined') {
-
-		yPos = 0;
-		xPos = 0;
-		zPos = 0;
-
-		for (let k = 0; k < 1; k++) {
-			mat4.fromTranslation(tmpMat, vec3.fromValues(xPos, yPos, zPos));
-			mat4.multiply(tmpMat, ringCF, tmpMat);   // tmp = ringCF * tmpMat
-			this.lampMat = mat4.create();
-			this.tmp = mat4.create();
-			let move = vec3.fromValues(1, 1, 1);
-			mat4.translate(this.lampMat, this.lampMat, move);
-			mat4.mul(this.tmp, tmpMat, this.lampMat);
-			this.lamp.draw(posAttr, colAttr, modelUnif, this.tmp);
-		}
-	}
 
     if (typeof shooter !== 'undefined') {
 
@@ -330,6 +396,27 @@ function drawScene() {
                     yPos = shootery;
                     xPos = shooterx;
                     zPos = shooterz;
+        switch (currSelection) {
+            case 0:
+                yPos = shootery;
+                xPos = shooterx;
+                zPos = shooterz;
+                mat4.fromTranslation(tmpMat, vec3.fromValues(xPos, yPos, zPos));
+                mat4.multiply(tmpMat, ringCF, tmpMat);   // tmp = ringCF * tmpMat
+                this.person1 = mat4.create();
+                this.tmp = mat4.create();
+                let scalePerson1 = vec3.fromValues(4, 4, 4);
+                mat4.scale(this.person1, this.person1, scalePerson1);
+                mat4.mul(this.tmp, tmpMat, this.person1);
+                this.shooter.draw(posAttr, normalAttr, modelUnif, this.tmp);
+                shooter.draw(posAttr, normalAttr, modelUnif, tmpMat);
+                break;
+            case 1:
+                yPos = shootery;
+                xPos = shooterx;
+                zPos = shooterz;
+
+                for (let k = 0; k < 2; k++) {
                     mat4.fromTranslation(tmpMat, vec3.fromValues(xPos, yPos, zPos));
                     mat4.multiply(tmpMat, armCFs[1], tmpMat);   // tmp = ringCF * tmpMat
                     this.person1 = mat4.create();
@@ -353,6 +440,12 @@ function drawScene() {
                     mat4.mul(this.tmp, tmpMat, this.person1);
                     this.shooter.draw(posAttr, colAttr, modelUnif, this.tmp);
                     shooter.draw(posAttr, colAttr, modelUnif, tmpMat);
+                    this.shooter.draw(posAttr, normalAttr, modelUnif, this.tmp);
+                    shooter.draw(posAttr, normalAttr, modelUnif, tmpMat);
+                    yPos = shooter2y - 0.2;
+                    xPos = shooter2x + 0.4;
+                    zPos = shooter2z;
+                }
                     break;
                 case 1:
                     yPos = shootery;
@@ -377,12 +470,7 @@ function drawScene() {
             }
 }
 
-	if (typeof basketball !== 'undefined') {
-		yPos = basketbally;
-		xPos = basketballx;
-		zPos = basketballz;
-
-		for (let k = 0; k < 1; k++) {
+        for (let k = 0; k < 1; k++) {
 			mat4.fromTranslation(tmpMat, vec3.fromValues(xPos, yPos, zPos));
             mat4.multiply(tmpMat, armCFs[0], tmpMat);   // tmp = ringCF * tmpMat
 
@@ -427,8 +515,8 @@ function drawScene() {
 			this.court_ = mat4.create();
 			this.tmp = mat4.create();
 			mat4.mul (this.tmp, tmpMat, this.court_);
-			this.court.draw(posAttr, colAttr, modelUnif, this.tmp);
-			court.draw(posAttr, colAttr, modelUnif, tmpMat);
+			this.court.draw(posAttr, normalAttr, modelUnif, this.tmp);
+			court.draw(posAttr, normalAttr, modelUnif, tmpMat);
 		}
 	}
 
@@ -442,8 +530,8 @@ function drawScene() {
             mat4.multiply(tmpMat, ringCF, tmpMat);   // tmp = ringCF * tmpMat
             this.tmp = mat4.create();
             mat4.mul(this.tmp, tmpMat, this.fence);
-            this.fence.draw(posAttr, colAttr, modelUnif, this.tmp);
-            fence.draw(posAttr, colAttr, modelUnif, tmpMat);
+            this.fence.draw(posAttr, normalAttr, modelUnif, this.tmp);
+            fence.draw(posAttr, normalAttr, modelUnif, tmpMat);
             xPos = xPos + 0.07;
             yPos = yPos - 0.07;
         }
@@ -456,8 +544,8 @@ function drawScene() {
             mat4.multiply(tmpMat, ringCF, tmpMat);   // tmp = ringCF * tmpMat
             this.tmp = mat4.create();
             mat4.mul(this.tmp, tmpMat, this.fence);
-            this.fence.draw(posAttr, colAttr, modelUnif, this.tmp);
-            fence.draw(posAttr, colAttr, modelUnif, tmpMat);
+            this.fence.draw(posAttr, normalAttr, modelUnif, this.tmp);
+            fence.draw(posAttr, normalAttr, modelUnif, tmpMat);
             xPos = xPos - 0.07;
             yPos = yPos + 0.07;
         }
@@ -475,12 +563,48 @@ function drawScene() {
             mat4.multiply(tmpMat, ringCF, tmpMat);   // tmp = ringCF * tmpMat
             this.tmp = mat4.create();
             mat4.mul(this.tmp, tmpMat, this.fence2);
-            this.fence2.draw(posAttr, colAttr, modelUnif, this.tmp);
-            fence2.draw(posAttr, colAttr, modelUnif, tmpMat);
+            this.fence2.draw(posAttr, normalAttr, modelUnif, this.tmp);
+            fence2.draw(posAttr, normalAttr, modelUnif, tmpMat);
             xPos = xPos + 0.1;
             yPos = yPos + 0.1;
         }
     }
+
+	if (typeof lamp !== 'undefined') {
+
+		yPos = lampy;
+		xPos = lampx;
+		zPos = lampz;
+
+		for (let k = 0; k < 1; k++) {
+			mat4.fromTranslation(tmpMat, vec3.fromValues(xPos, yPos, zPos));
+			mat4.multiply(tmpMat, ringCF, tmpMat);   // tmp = ringCF * tmpMat
+			this.lampMat = mat4.create();
+			this.tmp = mat4.create();
+			let move = vec3.fromValues(1, 1, 1);
+			mat4.translate(this.lampMat, this.lampMat, move);
+			mat4.mul(this.tmp, tmpMat, this.lampMat);
+			this.lamp.draw(posAttr, normalAttr, modelUnif, this.tmp);
+		}
+	}
+
+	if (typeof sun !== 'undefined') {
+
+		yPos = suny;
+		xPos = sunx;
+		zPos = sunz;
+
+		for (let k = 0; k < 1; k++) {
+			mat4.fromTranslation(tmpMat, vec3.fromValues(xPos, yPos, zPos));
+			mat4.multiply(tmpMat, ringCF, tmpMat);   // tmp = ringCF * tmpMat
+			this.sunMat = mat4.create();
+			this.tmp = mat4.create();
+			let move = vec3.fromValues(1, 1, 1);
+			mat4.translate(this.sunMat, this.sunMat, move);
+			mat4.mul(this.tmp, tmpMat, this.sunMat);
+			sun.draw(posAttr, colAttr, modelUnif, tmpMat);
+		}
+	}
 
 }
 

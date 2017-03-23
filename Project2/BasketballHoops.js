@@ -50,14 +50,32 @@ class BasketballHoops {
 
     draw (vertexAttr, colorAttr, modelUniform, coordFrame) {
 
+		gl.uniform3fv(objTintUnif, vec3.fromValues(22/255, 28/255, 33/255));
+		gl.uniform1f(ambCoeffUnif, 1);
+		gl.uniform1f(diffCoeffUnif, 1);
+		gl.uniform1f(specCoeffUnif, .8);
+		gl.uniform1f(shininessUnif, 50);
+
         mat4.mul (this.tmp, coordFrame, this.poleTransform);
         this.pole.draw(vertexAttr, colorAttr, modelUniform, this.tmp);
 
         mat4.mul (this.tmp, coordFrame, this.secondPoleTransform);
         this.secondPole.draw(vertexAttr, colorAttr, modelUniform, this.tmp);
 
+		gl.uniform3fv(objTintUnif, vec3.fromValues(220/255, 220/255, 220/255));
+		gl.uniform1f(ambCoeffUnif, 1);
+		gl.uniform1f(diffCoeffUnif, .5);
+		gl.uniform1f(specCoeffUnif, .5);
+		gl.uniform1f(shininessUnif, 30);
+
         mat4.mul (this.tmp, coordFrame, this.backboardTransform);
         this.backboard.draw(vertexAttr, colorAttr, modelUniform, this.tmp);
+
+		gl.uniform3fv(objTintUnif, vec3.fromValues(1, 85/255, 0));
+		gl.uniform1f(ambCoeffUnif, 1);
+		gl.uniform1f(diffCoeffUnif, .7);
+		gl.uniform1f(specCoeffUnif, .9);
+		gl.uniform1f(shininessUnif, 70);
 
         mat4.mul (this.tmp, coordFrame, this.rimTransform);
         this.rim.draw(vertexAttr, colorAttr, modelUniform, this.tmp);
