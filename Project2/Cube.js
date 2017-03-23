@@ -28,6 +28,16 @@ class Cube {
 			vec3.fromValues(+size / 2, +size / 2, -size / 2),  // 6
 			vec3.fromValues(-size / 2, +size / 2, -size / 2)   // 7
 		];
+
+		this.norms = [
+			vec3.fromValues(0, 1, 0),
+			vec3.fromValues(0, 0, 1),
+			vec3.fromValues(0, -1, 0),
+			vec3.fromValues(-1, 0, 0),
+			vec3.fromValues(1, 0, 0),
+			vec3.fromValues(0, 0, -1)
+		];
+
 		this.color = [col1, col2, col3, col1, col2, col3, col1, col2];
 
 		this.index = [];
@@ -42,7 +52,10 @@ class Cube {
 		for (let k = 0; k < this.vex.length; k++)
 		{
 			vertices.push(this.vex[k][0], this.vex[k][1], this.vex[k][2]);
-			vertices.push(this.color[k][0], this.color[k][1], this.color[k][2]);
+			if(k < 6)
+			vertices.push(this.norms[k][0], this.norms[k][1], this.norms[k][2]);
+			else
+				vertices.push(0,0,0);
 			// vec3.lerp (randColor, col1, col2, Math.random()); /* linear interpolation between two colors */
 			// vertices.push(randColor[0], randColor[1], randColor[2]);
 		}

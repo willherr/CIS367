@@ -14,32 +14,52 @@ class Torus {
 	 */
 	constructor (gl, majRadius, minRadius, majDiv, minDiv, col1, col2) {
 
-        /* if colors are undefined, generate random colors */
-		if (typeof col1 === "undefined") col1 = vec3.fromValues(Math.random(), Math.random(), Math.random());
-		if (typeof col2 === "undefined") col2 = vec3.fromValues(Math.random(), Math.random(), Math.random());
-		//let randColor = vec3.create();
-		let vertices = [];
+		/* if colors are undefined, generate random colors */
+		this.vertices = [];
+		let normalLines = [];
+		let n1 = vec3.create();
+		let n2 = vec3.create();
+		let norm = vec3.create();
 		for (let s = 0; s < minDiv; s++) {
 			let minAngle = s * 2 * Math.PI / minDiv;
 			let h = minRadius * Math.sin(minAngle);
-			let r = majRadius + minRadius * Math.cos(minAngle);
+			let radius = majRadius + minRadius * Math.cos(minAngle);
+			let b = radius * Math.cos(minAngle);
 			for (let k = 0; k < majDiv; k++) {
 				let majAngle = k * 2 * Math.PI / majDiv;
-				let x = r * Math.cos(majAngle);
-				let y = r * Math.sin(majAngle);
+				let x = radius * Math.cos(majAngle);
+				let y = radius * Math.sin(majAngle);
 
-                /* the first three floats are 3D (x,y,z) position */
-				vertices.push(x, y, h);
-				//vec3.lerp(randColor, col1, col2, Math.random());
-                /* linear interpolation between two colors */
-                /* the next three floats are RGB */
-				vertices.push(1, 140/255, 0);
+				/* the first three floats are 3D (x,y,z) position */
+				this.vertices.push(x, y, h);
+				/* calculate the tangent vectors */
+				vec3.set (n1, -Math.sin(majAngle), Math.cos(majAngle), 0);
+				vec3.set (n2, -Math.sin(minAngle) * Math.cos(majAngle),
+					-Math.sin(minAngle) * Math.sin(majAngle),
+					Math.cos(minAngle));
+				/* n1 is tangent along major circle, n2 is tangent along the minor circle */
+				vec3.cross (norm, n1, n2);
+				vec3.normalize(norm, norm);
+				/* the next three floats are vertex normal */
+				this.vertices.push (norm[0], norm[1], norm[2]);
+
+				/* Use normalLines for rendering the normal vectors using LINES (useful for debugging) */
+				normalLines.push(x, y, h, 1, 1, 1);  /* (x,y,z)   (r,g,b) */
+				normalLines.push (
+					x + this.NORMAL_SCALE * norm[0],
+					y + this.NORMAL_SCALE * norm[1],
+					h + this.NORMAL_SCALE * norm[2], 1, 1, 1);
 			}
 		}
+		this.normalCount = 2 * majDiv * minDiv;
 
 		this.vbuff = gl.createBuffer();
 		gl.bindBuffer(gl.ARRAY_BUFFER, this.vbuff);
-		gl.bufferData(gl.ARRAY_BUFFER, Float32Array.from(vertices), gl.STATIC_DRAW);
+		gl.bufferData(gl.ARRAY_BUFFER, Float32Array.from(this.vertices), gl.STATIC_DRAW);
+
+		this.nbuff = gl.createBuffer();
+		gl.bindBuffer(gl.ARRAY_BUFFER, this.nbuff);
+		gl.bufferData(gl.ARRAY_BUFFER, Float32Array.from(normalLines), gl.STATIC_DRAW);
 
 		this.indices = [];
 		var startIndex = 0;

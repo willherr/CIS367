@@ -18,6 +18,12 @@ class Fence {
     }
 
     draw (vertexAttr, colorAttr, modelUniform, coordFrame) {
+		gl.uniform3fv(objTintUnif, vec3.fromValues(108/255, 108/255, 108/255));
+		gl.uniform1f(ambCoeffUnif, 1);
+		gl.uniform1f(diffCoeffUnif, 1);
+		gl.uniform1f(specCoeffUnif, .5);
+		gl.uniform1f(shininessUnif, 30);
+
         mat4.mul (this.tmp, coordFrame, this.fenceTransform);
         this.fence.draw(vertexAttr, colorAttr, modelUniform, this.tmp);
 
