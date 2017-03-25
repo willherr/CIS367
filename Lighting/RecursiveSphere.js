@@ -1,7 +1,7 @@
 /**
  * Created by Hans Dulimarta on 2/1/17.
  */
-class RecursiveSphere {
+class RecursiveSphere extends GeometricObject  {
 	/**
 	 * Create a 3D sphere with tip at the Z+ axis and base on the XY plane
 	 * @param {Object} gl      the current WebGL context
@@ -11,6 +11,7 @@ class RecursiveSphere {
 	 * @param {vec3}   [col2]    color #2 to use
 	 */
 	constructor (gl, RADIUS, subDiv, col1, col2) {
+		super(gl);
 
 		/* if colors are undefined, generate random colors */
 		if (typeof col1 === "undefined") col1 = vec3.fromValues(Math.random(), Math.random(), Math.random());
@@ -60,51 +61,51 @@ class RecursiveSphere {
 		if (N > 0) {
 			let mid_ab = vec3.lerp(vec3.create(), this.vex[a], this.vex[b], 0.5);
 			vec3.normalize(mid_ab, mid_ab);
-			vec3.scale (mid_ab, mid_ab, this.RADIUS);
+			vec3.scale(mid_ab, mid_ab, this.RADIUS);
 			let mid_ac = vec3.lerp(vec3.create(), this.vex[a], this.vex[c], 0.5);
 			vec3.normalize(mid_ac, mid_ac);
-			vec3.scale (mid_ac, mid_ac, this.RADIUS);
+			vec3.scale(mid_ac, mid_ac, this.RADIUS);
 			let mid_bc = vec3.lerp(vec3.create(), this.vex[b], this.vex[c], 0.5);
 			vec3.normalize(mid_bc, mid_bc);
-			vec3.scale (mid_bc, mid_bc, this.RADIUS);
+			vec3.scale(mid_bc, mid_bc, this.RADIUS);
 			this.vex.push(mid_ab);
 			let n_ab = this.vex.length - 1;
 			this.vex.push(mid_bc);
 			let n_bc = this.vex.length - 1;
 			this.vex.push(mid_ac);
 			let n_ac = this.vex.length - 1;
-			this.triang (N - 1, a, n_ab, n_ac);
-			this.triang (N - 1, n_ab, b, n_bc);
-			this.triang (N - 1, n_ac, n_bc, c);
-			this.triang (N - 1, n_ab, n_bc, n_ac);
+			this.triang(N - 1, a, n_ab, n_ac);
+			this.triang(N - 1, n_ab, b, n_bc);
+			this.triang(N - 1, n_ac, n_bc, c);
+			this.triang(N - 1, n_ab, n_bc, n_ac);
 		} else {
 			/* stop recursion */
 			this.index.push(a, b, c);
 		}
 	}
-	/**
-	 * Draw the object
-	 * @param {Number} vertexAttr a handle to a vec3 attribute in the vertex shader for vertex xyz-position
-	 * @param {Number} colorAttr  a handle to a vec3 attribute in the vertex shader for vertex rgb-color
-	 * @param {Number} modelUniform a handle to a mat4 uniform in the shader for the coordinate frame of the model
-	 * @param {mat4} coordFrame a JS mat4 variable that holds the actual coordinate frame of the object
-	 */
-	draw(vertexAttr, colorAttr, modelUniform, coordFrame) {
-		/* copy the coordinate frame matrix to the uniform memory in shader */
-		gl.uniformMatrix4fv(modelUniform, false, coordFrame);
-
-		/* binder the (vertex+color) buffer */
-		gl.bindBuffer(gl.ARRAY_BUFFER, this.vbuff);
-
-		/* with the "packed layout"  (x,y,z,r,g,b),
-		 the stride distance between one group to the next is 24 bytes */
-		gl.vertexAttribPointer(vertexAttr, 3, gl.FLOAT, false, 24, 0); /* (x,y,z) begins at offset 0 */
-		gl.vertexAttribPointer(colorAttr, 3, gl.FLOAT, false, 24, 12); /* (r,g,b) begins at offset 12 */
-
-		for (let k = 0; k < this.indices.length; k++) {
-			let obj = this.indices[k];
-			gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, obj.buffer);
-			gl.drawElements(obj.primitive, obj.numPoints, gl.UNSIGNED_SHORT, 0);
-		}
-	}
+	// /**
+	//  * Draw the object
+	//  * @param {Number} vertexAttr a handle to a vec3 attribute in the vertex shader for vertex xyz-position
+	//  * @param {Number} colorAttr  a handle to a vec3 attribute in the vertex shader for vertex rgb-color
+	//  * @param {Number} modelUniform a handle to a mat4 uniform in the shader for the coordinate frame of the model
+	//  * @param {mat4} coordFrame a JS mat4 variable that holds the actual coordinate frame of the object
+	//  */
+	// draw(vertexAttr, colorAttr, modelUniform, coordFrame) {
+	// 	/* copy the coordinate frame matrix to the uniform memory in shader */
+	// 	gl.uniformMatrix4fv(modelUniform, false, coordFrame);
+	//
+	// 	/* binder the (vertex+color) buffer */
+	// 	gl.bindBuffer(gl.ARRAY_BUFFER, this.vbuff);
+	//
+	// 	/* with the "packed layout"  (x,y,z,r,g,b),
+	// 	 the stride distance between one group to the next is 24 bytes */
+	// 	gl.vertexAttribPointer(vertexAttr, 3, gl.FLOAT, false, 24, 0); /* (x,y,z) begins at offset 0 */
+	// 	gl.vertexAttribPointer(colorAttr, 3, gl.FLOAT, false, 24, 12); /* (r,g,b) begins at offset 12 */
+	//
+	// 	for (let k = 0; k < this.indices.length; k++) {
+	// 		let obj = this.indices[k];
+	// 		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, obj.buffer);
+	// 		gl.drawElements(obj.primitive, obj.numPoints, gl.UNSIGNED_SHORT, 0);
+	// 	}
+	// }
 }

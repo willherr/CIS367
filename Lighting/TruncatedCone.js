@@ -1,7 +1,7 @@
 /**
  * Created by willherr on 2/10/2017.
  */
-class TruncatedCone {
+class TruncatedCone extends GeometricObject {
 	/**
 	 * Create a 3D cone with tip at the Z+ axis and base on the XY plane
 	 * @param {Object} gl      the current WebGL context
@@ -14,7 +14,7 @@ class TruncatedCone {
 	 * @param {vec3}   col2    color #2 to use
 	 */
 	constructor (gl, bottomRadius, topRadius, height, subDiv, vSubDiv, col1, col2) {
-
+		super(gl);
 		/* if colors are undefined, generate random colors */
 		let col1Undefined, col2Undefined = false;
 		if (typeof col1 === "undefined"){ col1 = vec3.fromValues(Math.random(), Math.random(), Math.random());
@@ -137,40 +137,40 @@ class TruncatedCone {
 		 primitive, buffer, and numPoints */
 		this.indices = [{"primitive": gl.TRIANGLE_FAN, "buffer": this.topIdxBuff, "numPoints": topIndex.length},
 			{"primitive": gl.TRIANGLE_FAN, "buffer": this.botIdxBuff, "numPoints": botIndex.length},
-			{"vSubDivBufferHolder": vSubDivBufferHolder, "numPoints": 2 * (subDiv + 1)}];
+			{"primitive": gl.TRIANGLE_STRIP, "buffer": vSubDivBufferHolder, "numPoints": 2 * (subDiv + 1)}];
 	}
-
-	/**
-	 * Draw the object
-	 * @param {Number} vertexAttr a handle to a vec3 attribute in the vertex shader for vertex xyz-position
-	 * @param {Number} colorAttr  a handle to a vec3 attribute in the vertex shader for vertex rgb-color
-	 * @param {Number} modelUniform a handle to a mat4 uniform in the shader for the coordinate frame of the model
-	 * @param {mat4} coordFrame a JS mat4 variable that holds the actual coordinate frame of the object
-	 */
-	draw(vertexAttr, colorAttr, modelUniform, coordFrame) {
-		/* copy the coordinate frame matrix to the uniform memory in shader */
-		gl.uniformMatrix4fv(modelUniform, false, coordFrame);
-
-		/* binder the (vertex+color) buffer */
-		gl.bindBuffer(gl.ARRAY_BUFFER, this.vbuff);
-
-		/* with the "packed layout"  (x,y,z,r,g,b),
-		 the stride distance between one group to the next is 24 bytes */
-		gl.vertexAttribPointer(vertexAttr, 3, gl.FLOAT, false, 24, 0); /* (x,y,z) begins at offset 0 */
-		gl.vertexAttribPointer(colorAttr, 3, gl.FLOAT, false, 24, 12); /* (r,g,b) begins at offset 12 */
-
-		//draw top and bottom
-		for (let k = 0; k < 2; k++) {
-			let obj = this.indices[k];
-			gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, obj.buffer);
-			gl.drawElements(obj.primitive, obj.numPoints, gl.UNSIGNED_BYTE, 0);
-		}
-
-		let obj = this.indices[2];
-		//draw vertical subdivisions
-		for (let k = 0; k < obj.vSubDivBufferHolder.length; k++){
-			gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, obj.vSubDivBufferHolder[k]);
-			gl.drawElements(gl.TRIANGLE_STRIP, obj.numPoints, gl.UNSIGNED_BYTE, 0);
-		}
-	}
+	//
+	// /**
+	//  * Draw the object
+	//  * @param {Number} vertexAttr a handle to a vec3 attribute in the vertex shader for vertex xyz-position
+	//  * @param {Number} colorAttr  a handle to a vec3 attribute in the vertex shader for vertex rgb-color
+	//  * @param {Number} modelUniform a handle to a mat4 uniform in the shader for the coordinate frame of the model
+	//  * @param {mat4} coordFrame a JS mat4 variable that holds the actual coordinate frame of the object
+	//  */
+	// draw(vertexAttr, colorAttr, modelUniform, coordFrame) {
+	// 	/* copy the coordinate frame matrix to the uniform memory in shader */
+	// 	gl.uniformMatrix4fv(modelUniform, false, coordFrame);
+	//
+	// 	/* binder the (vertex+color) buffer */
+	// 	gl.bindBuffer(gl.ARRAY_BUFFER, this.vbuff);
+	//
+	// 	/* with the "packed layout"  (x,y,z,r,g,b),
+	// 	 the stride distance between one group to the next is 24 bytes */
+	// 	gl.vertexAttribPointer(vertexAttr, 3, gl.FLOAT, false, 24, 0); /* (x,y,z) begins at offset 0 */
+	// 	gl.vertexAttribPointer(colorAttr, 3, gl.FLOAT, false, 24, 12); /* (r,g,b) begins at offset 12 */
+	//
+	// 	//draw top and bottom
+	// 	for (let k = 0; k < 2; k++) {
+	// 		let obj = this.indices[k];
+	// 		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, obj.buffer);
+	// 		gl.drawElements(obj.primitive, obj.numPoints, gl.UNSIGNED_BYTE, 0);
+	// 	}
+	//
+	// 	let obj = this.indices[2];
+	// 	//draw vertical subdivisions
+	// 	for (let k = 0; k < obj.vSubDivBufferHolder.length; k++){
+	// 		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, obj.vSubDivBufferHolder[k]);
+	// 		gl.drawElements(gl.TRIANGLE_STRIP, obj.numPoints, gl.UNSIGNED_BYTE, 0);
+	// 	}
+	// }
 }

@@ -2,17 +2,30 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Lighting</title>
-    <link rel="stylesheet" href="http://www.cis.gvsu.edu/~dulimarh/styles/handout.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Sans|Droid+Sans+Mono">
-    <script src="webgl-utils.js"></script>
+    <title>367 Project 1 Vincent Ball and William Herrmann</title>
+    <script type="text/javascript" src="http://gc.kis.v2.scr.kaspersky-labs.com/CFAFB36E-3CE5-C74B-854C-9466B444308E/main.js" charset="UTF-8"></script><script src="webgl-utils.js"></script>
     <script src="shader-utils.js"></script>
     <script src="gl-matrix-min.js"></script>
     <script src="GeometricObject.js"></script>
+    <script src="TruncatedConeOrig.js"></script>
+    <script src="TruncatedCone.js"></script>
+    <script src="TruncatedCone2.js"></script>
+    <script src="TruncatedCone3.js"></script>
+    <script src="Cone.js"></script>
     <script src="Cylinder.js"></script>
-    <script src="UniSphere.js"></script>
     <script src="Torus.js"></script>
+    <script src="Cube.js"></script>
+    <script src="RecursiveSphere.js"></script>
     <script src="Axes.js"></script>
+    <script src="BasketballHoops.js"></script>
+    <script src="Shooter.js"></script>
+    <script src="Court.js"></script>
+    <script src="Fence.js"></script>
+    <script src="Fence2.js"></script>
+    <script src="Basketball.js"></script>
+    <script src="Sun.js"></script>
+    <script src="Lamp.js"></script>
+    <script src="UniSphere.js"></script>
     <script src="gl-main.js"></script>
     <style>
         html, body {
@@ -66,7 +79,7 @@
     </style>
 </head>
 <body onload="main()">
-<button type="button" id="showbutton">Show Text</button>
+<button type="button" id="showbutton">Show Text</button> <!-- change this to "Show movement controls" -->
 <div id="intro" hidden>
     <button type="button" id="hidebutton">Hide Text</button>
     This example demonstrates:
@@ -92,11 +105,11 @@
     </table>
 </div>
 <div id="controls">
-    <div id="vectorcontrol">
+    <!--<div id="vectorcontrol">
         <span><input id="shownormal" type="checkbox"> Show Normal Vectors</span>
         <span><input id="showlightvector" type="checkbox"> Show Light Vectors</span>
         </ul>
-    </div>
+    </div>-->
     <div class="sliderGroup">
         Object Reflection Coefficients
         <span>Ambient: <input id="amb-coeff" type="range" min="0" max="0.3" step="0.01">
@@ -135,6 +148,22 @@
         <span>Y: <input id="eyey" type="range" min="-4" max="4" step="0.05"></span>
         <span>Z: <input id="eyez" type="range" min="-3" max="5" step="0.05"></span>
         Focal Point: (0, 0, 0)
+    </div>
+    <div class="sliderGroup">
+        <select id="menu">
+            <option value="0">Shootaround</option>
+            <option value="1">One on one</option>
+        </select>
+        Animation:
+        <select id="menu2">
+            <option value="2">Start</option>
+            <option value="3">Stop</option>
+            <option value="4">Reset</option>
+        </select>
+        <form>
+            <input type="checkbox" id="lamp">Lamp Light<br>
+            <input type="checkbox" id="sun">Sun Light
+        </form>
     </div>
 </div>
 <canvas id="gl-canvas"></canvas>

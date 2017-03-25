@@ -15,7 +15,7 @@ class BasketballHoops {
         let pole2color = vec3.fromValues(55/255, 70/255, 85/255);
 
         this.rim = new Torus(gl, 0.1, 0.01, 30, 10);
-        this.backboard = new TruncatedConeOrig(gl, 0.45, 0.45, 0.03, 4, 2, backboard1, backboard2);
+        this.backboard = new Cylinder(gl, 0.45, 0.45, 0.03, 4, 2, backboard1, backboard2);  // rectangular prism
         this.pole = new Cylinder(gl, 0.045, 0.045, 2.1, 40, pole1color, pole2color);
         this.secondPole = new Cylinder(gl, 0.04, 0.04, 0.33, 40, 2, pole1color, pole2color);
 
@@ -69,7 +69,7 @@ class BasketballHoops {
 		gl.uniform1f(shininessUnif, 30);
 
         mat4.mul (this.tmp, coordFrame, this.backboardTransform);
-        this.backboard.draw(vertexAttr, colorAttr, modelUniform, this.tmp);
+        this.backboard.draw(vertexAttr, colorAttr, modelUniform, this.tmp);            //causes gl range out of bounds
 
 		gl.uniform3fv(objTintUnif, vec3.fromValues(1, 85/255, 0));
 		gl.uniform1f(ambCoeffUnif, 1);
