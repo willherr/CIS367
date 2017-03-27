@@ -120,6 +120,7 @@ function main() {
 
 	gl = WebGLUtils.setupWebGL(glCanvas, null);
 	window.addEventListener("resize", resizeHandler, false);
+	window.addEventListener("keypress", keyboardHandler, false);
 	ShaderUtils.loadFromFile(gl, "vshader.glsl", "fshader.glsl")
 		.then (prog => {
 			shaderProg = prog;
@@ -471,6 +472,12 @@ function drawScene() {                             //Check dulimarta's code for 
 	 let option1 = document.getElementById("option").options[0].value;
 	 let option2 = document.getElementById("option").options[1].value;
 	 */
+	gl.disableVertexAttribArray(normalAttr);
+	gl.enableVertexAttribArray(colAttr);
+	gl.uniform1i(useLightingUnif, false);
+	pointLight.draw(posAttr, colAttr, modelUnif, IDENTITY);
+
+	gl.uniform1i(useLightingUnif, true);
 
 	let yPos = 0;
 	let xPos = 0;
@@ -499,6 +506,8 @@ function drawScene() {                             //Check dulimarta's code for 
 
 		}
 	}
+	gl.disableVertexAttribArray(normalAttr);
+	gl.enableVertexAttribArray(colAttr);
 
 	if (typeof sun !== 'undefined') {
 

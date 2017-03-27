@@ -69,7 +69,7 @@ class BasketballHoops {
 		gl.uniform1f(shininessUnif, 30);
 
         mat4.mul (this.tmp, coordFrame, this.backboardTransform);
-        this.backboard.draw(vertexAttr, colorAttr, modelUniform, this.tmp);            //causes gl range out of bounds
+        this.backboard.draw(vertexAttr, colorAttr, modelUniform, this.tmp);
 
 		gl.uniform3fv(objTintUnif, vec3.fromValues(1, 85/255, 0));
 		gl.uniform1f(ambCoeffUnif, 1);
@@ -77,7 +77,10 @@ class BasketballHoops {
 		gl.uniform1f(specCoeffUnif, .9);
 		gl.uniform1f(shininessUnif, 70);
 
+		gl.disableVertexAttribArray(colAttr);
+		gl.enableVertexAttribArray(normalAttr);
+
         mat4.mul (this.tmp, coordFrame, this.rimTransform);
-        this.rim.draw(vertexAttr, colorAttr, modelUniform, this.tmp);
+        this.rim.draw(vertexAttr, normalAttr, modelUniform, this.tmp);
     }
 }
