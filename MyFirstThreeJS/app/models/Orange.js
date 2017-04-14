@@ -3,8 +3,8 @@
  */
 class Orange {
     constructor (radius) { // orange radius
-        const orangeTex = new THREE.TextureLoader().load("textures/orange.jpg");
-        orangeTex.repeat.set(1,1);
+        const orangeTex = new THREE.TextureLoader().load("textures/orange_fruit.jpg")
+        orangeTex.repeat.set(6,6);
         orangeTex.wrapS = THREE.RepeatWrapping;
         orangeTex.wrapT = THREE.RepeatWrapping;
 
