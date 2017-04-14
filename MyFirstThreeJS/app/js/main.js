@@ -10,6 +10,12 @@ init();
 
 animate();
 
+let score = 0;
+document.getElementById('score').innerHTML = "Score: " +  score;
+
+let timeLeft = 30;
+let elem = document.getElementById('timer');
+
 function init() {
     translateZneg = new THREE.Matrix4().makeTranslation(0, 0, -5);
     translateZpos = new THREE.Matrix4().makeTranslation(0, 0, 5);
@@ -18,18 +24,31 @@ function init() {
 
     scene = new THREE.Scene();
 
-    myOrange = new Orange(20); //radius parameter
+    myOrange = new Orange(15); //radius parameter
     scene.add(myOrange);
     myGrape = new Grape(8); //radius parameter
     scene.add(myGrape);
     myApple = new Apple(1); //scalar parameter
     scene.add(myApple);
 
-    const lightOne = new THREE.DirectionalLight(0xFFFFFF, 1.0);
-    lightOne.position.set(0,-50,25);
-    scene.add(lightOne);
+    const gravelTex = new THREE.TextureLoader().load("textures/wood.jpeg");
+    gravelTex.repeat.set(2,2);     // repeat the texture 6x in both s- and t- directions
+    gravelTex.wrapS = THREE.RepeatWrapping;
+    gravelTex.wrapT = THREE.RepeatWrapping;
+    const ground = new THREE.Mesh (
+        new THREE.PlaneGeometry(3500, 4000),
+        new THREE.MeshPhongMaterial({ map: gravelTex})
+    );
+    ground.translateZ(-300);
 
-    camera = new THREE.PerspectiveCamera (75, window.innerWidth/window.innerHeight, 1, 10000);
+    scene.add(ground);
+
+    const lightOne = new THREE.DirectionalLight(0xFFFFFF, 1.0);
+    lightOne.position.set(10, -50, 100);
+    scene.add (lightOne); //remember to add the light to the scene
+
+    camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 10000 );
+    camera.position.z = 1000;
 
     const eyePos = new THREE.Vector3 (0, -100, 40);
     const cameraPose = new THREE.Matrix4().lookAt (
@@ -62,7 +81,7 @@ function init() {
 
     grapeCF.multiply(new THREE.Matrix4().makeTranslation(50, 0, 0)); //translates the grape outside the orange
     appleCF.multiply(new THREE.Matrix4().makeTranslation(-50, 0, 0));
-    appleCF.multiply(new THREE.Matrix4().makeScale(2, 2, 2)); // scales the apple slightly bigger
+    appleCF.multiply(new THREE.Matrix4().makeScale(2, 2, 2));
 
     window.addEventListener("keydown", keyboardHandler, false);
     renderer = new THREE.WebGLRenderer();
@@ -103,19 +122,39 @@ function animate() {
 }
 
 function keyboardHandler(event){
-    console.log(event.key);
-    camera.matrixAutoUpdate = false;
-    switch(event.key){
-        case 'ArrowLeft': camera.matrixWorld.multiply(rotateYpos);
-            break;
-        case 'ArrowRight': camera.matrixWorld.multiply(rotateYneg);
-            break;
-        case 'ArrowUp': camera.matrixWorld.multiply(translateZneg);
-            break;
-        case 'ArrowDown': camera.matrixWorld.multiply(translateZpos);
-            break;
-        default:
-            console.log("That key ^ does nothing...");
-            break;
+    /*
+     console.log(event.key);
+     camera.matrixAutoUpdate = false;
+     switch(event.key){
+     case 'ArrowLeft': camera.matrixWorld.multiply(rotateYpos);
+     break;
+     case 'ArrowRight': camera.matrixWorld.multiply(rotateYneg);
+     break;
+     case 'ArrowUp': camera.matrixWorld.multiply(translateZneg);
+     break;
+     case 'ArrowDown': camera.matrixWorld.multiply(translateZpos);
+     break;
+     default:
+     console.log("That key ^ does nothing...");
+     break;
+     }
+     */
+}
+
+function countdown() {
+    if (timeLeft == 0) {
+        elem.innerHTML = "Time's up!";
+        clearTimeout(timerId);
+    } else if (timeLeft >= 10){
+        elem.innerHTML = '0:' + timeLeft;
+        timeLeft--;
     }
+    else if (timeLeft < 10  && timeLeft > 0){
+        elem.innerHTML = '0:0' + timeLeft;
+        timeLeft--;
+    }
+}
+
+function startTimer(){
+    let timerId = setInterval(countdown, 1000);
 }
