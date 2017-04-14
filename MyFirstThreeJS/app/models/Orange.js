@@ -14,7 +14,7 @@ class Orange {
         orange_fruit.scale.z = .9;
 
         const orangeGroup = new THREE.Group();
-        orangeGroup.add (orange_fruit);  // place the torus in the group
+        orangeGroup.add (orange_fruit);
 
         return orangeGroup;   // the constructor must return the entire group
     }

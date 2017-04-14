@@ -2,7 +2,7 @@
  * Created by willherr on 4/13/2017.
  */
 class Apple {
-    constructor (scalar) { // scales apple
+    constructor () { //no parameter
         const rot = Math.PI/7;
         const rotArray = [1, -1, 1, -1];
         const trans = -2;
@@ -22,30 +22,31 @@ class Apple {
         const stemGeo = new THREE.CylinderGeometry(.8, .4, 2, 20, 10);
         const stemMat = new THREE.MeshPhongMaterial({map: stemTex});
 
+        //creating objects that comprise apple
         const stemPiece = new THREE.Mesh(stemGeo, stemMat);
         const appleBody = new THREE.Mesh(cylinderGeo, appleMat);
         const applePiece = new THREE.Mesh (sphereGeo, appleMat);
+        const stemTop = new THREE.Mesh(new THREE.CylinderGeometry(.3, .7, 1.5, 20, 10), stemMat);
 
+        //initial object changes
+        stemTop.translateZ(1.5);
+        stemTop.translateY(-.3);
+        stemTop.rotateX(-Math.PI/3);
         applePiece.scale.z = 1.5;
         applePiece.translateZ(-2);
         appleBody.rotateX(Math.PI/2);
         stemPiece.rotateX(-Math.PI/2);
 
+        //groups
         const appleGroup = new THREE.Group();
-        appleGroup.add(appleBody);
         const appleTops = new THREE.Group();
         const stemGroup = new THREE.Group();
         stemGroup.add(stemPiece);
-
-        const stemTop = new THREE.Mesh(new THREE.CylinderGeometry(.3, .7, 1.5, 20, 10), stemMat);
-        stemTop.translateZ(1.5);
-        stemTop.translateY(-.3);
-        stemTop.rotateX(-Math.PI/3);
-
+        appleGroup.add(appleBody);
         stemGroup.add(stemTop);
         stemGroup.translateZ(7.5);
 
-
+        //creating "bumps" on apple
         for (let k = 0; k < 4; k++) {
             const piece = applePiece.clone();
             let top;
@@ -68,14 +69,15 @@ class Apple {
             appleTops.add(top);
             appleGroup.add (piece);
         }
+        //duplicating the top four bumps and rotating evenly
         const tops = appleTops.clone();
         tops.rotateZ(Math.PI/4);
 
+        //adding groups to entire apple
         appleGroup.add(tops);
         appleGroup.add(appleTops);
         appleGroup.add(stemGroup);
 
-        appleGroup.scale.copy(new THREE.Vector3 (scalar, scalar, scalar));
         return appleGroup;
     }
 }

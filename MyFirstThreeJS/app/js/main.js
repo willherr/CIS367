@@ -17,6 +17,9 @@ let timeLeft = 30;
 let elem = document.getElementById('timer');
 
 function init() {
+    const orangeRadius = 15;
+    const grapeRadius = 8;
+
     translateZneg = new THREE.Matrix4().makeTranslation(0, 0, -5);
     translateZpos = new THREE.Matrix4().makeTranslation(0, 0, 5);
     rotateYneg = new THREE.Matrix4().makeRotationY(THREE.Math.degToRad(-5));
@@ -24,20 +27,20 @@ function init() {
 
     scene = new THREE.Scene();
 
-    myOrange = new Orange(15); //radius parameter
+    myOrange = new Orange(orangeRadius);
     scene.add(myOrange);
-    myGrape = new Grape(8); //radius parameter
+    myGrape = new Grape(grapeRadius);
     scene.add(myGrape);
-    myApple = new Apple(1); //scalar parameter
+    myApple = new Apple();
     scene.add(myApple);
 
-    const gravelTex = new THREE.TextureLoader().load("textures/wood.jpeg");
-    gravelTex.repeat.set(2,2);     // repeat the texture 6x in both s- and t- directions
-    gravelTex.wrapS = THREE.RepeatWrapping;
-    gravelTex.wrapT = THREE.RepeatWrapping;
+    const woodTex = new THREE.TextureLoader().load("textures/wood.jpeg");
+    woodTex.repeat.set(2,2);     // repeat the texture 6x in both s- and t- directions
+    woodTex.wrapS = THREE.RepeatWrapping;
+    woodTex.wrapT = THREE.RepeatWrapping;
     const ground = new THREE.Mesh (
         new THREE.PlaneGeometry(3500, 4000),
-        new THREE.MeshPhongMaterial({ map: gravelTex})
+        new THREE.MeshPhongMaterial({ map: woodTex})
     );
     ground.translateZ(-300);
 
@@ -56,14 +59,13 @@ function init() {
         new THREE.Vector3 (0, 0, 0),
         new THREE.Vector3 (0, 0, 1));
 
-// lookAt() initialized only the rotational component
-// we have to set the camera position using a separate call
+    /* For Development Purposes */
     cameraPose.setPosition(eyePos);
-
-    camera.matrixAutoUpdate = false;    // disable matrix auto update
+    camera.matrixAutoUpdate = false;
     camera.matrixWorld.copy (cameraPose);
-// camera.updateMatrixWorld (true);
+    /************************************/
 
+    /* Object Coordinate Frames */
     orangeCF = new THREE.Matrix4();
     orangeTrans = new THREE.Vector3();
     orangeScale = new THREE.Vector3();
@@ -79,8 +81,11 @@ function init() {
     appleScale = new THREE.Vector3();
     appleRot = new THREE.Quaternion();
 
-    grapeCF.multiply(new THREE.Matrix4().makeTranslation(50, 0, 0)); //translates the grape outside the orange
+    /* Placing transforming objects for development purposes */
+    grapeCF.multiply(new THREE.Matrix4().makeTranslation(50, 0, 0));
     appleCF.multiply(new THREE.Matrix4().makeTranslation(-50, 0, 0));
+
+    /* I think the apple should be twice the original size */
     appleCF.multiply(new THREE.Matrix4().makeScale(2, 2, 2));
 
     window.addEventListener("keydown", keyboardHandler, false);
@@ -122,7 +127,7 @@ function animate() {
 }
 
 function keyboardHandler(event){
-    /*
+    /* Going to uncomment these for object building purposes */
      console.log(event.key);
      camera.matrixAutoUpdate = false;
      switch(event.key){
@@ -138,7 +143,7 @@ function keyboardHandler(event){
      console.log("That key ^ does nothing...");
      break;
      }
-     */
+
 }
 
 function countdown() {

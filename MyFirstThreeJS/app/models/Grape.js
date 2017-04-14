@@ -16,8 +16,8 @@ class Grape {
         grape.scale.x = grape.scale.y = .8;
 
         const grapeGroup = new THREE.Group();
-        grapeGroup.add (grape);  // place the torus in the group
+        grapeGroup.add (grape);
 
-        return grapeGroup;   // the constructor must return the entire group
+        return grapeGroup;
     }
 }
