@@ -4,9 +4,9 @@
 class Orange {
     constructor (radius) { // orange radius
         const orangeTex = new THREE.TextureLoader().load("textures/orange_texture.jpg");
-        orangeTex.repeat.set(1,1);
-        orangeTex.wrapS = THREE.RepeatWrapping;
-        orangeTex.wrapT = THREE.RepeatWrapping;
+        orangeTex.repeat.set(2, 2);
+        orangeTex.wrapS = THREE.MirroredRepeatWrapping;
+        orangeTex.wrapT = THREE.MirroredRepeatWrapping;
 
         const sphereGeo = new THREE.SphereGeometry(radius, 20, 20); //using defaults for the rest of the constructor
         const sphereMat = new THREE.MeshPhongMaterial ({map: orangeTex});

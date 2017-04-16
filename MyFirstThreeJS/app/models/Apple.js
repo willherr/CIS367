@@ -8,9 +8,9 @@ class Apple {
         const trans = -2;
 
         const appleTex = new THREE.TextureLoader().load("textures/apple_fruit.jpg");
-        //grapeTex.repeat.set(6,6);
-        appleTex.wrapS = THREE.RepeatWrapping;
-        appleTex.wrapT = THREE.RepeatWrapping;
+        appleTex.repeat.set(4,4);
+        appleTex.wrapS = THREE.MirroredRepeatWrapping;
+        appleTex.wrapT = THREE.MirroredRepeatWrapping;
 
         const stemTex = new THREE.TextureLoader().load("textures/apple_stem.jpg");
         stemTex.wrapS = THREE.RepeatWrapping;
