@@ -4,14 +4,16 @@ var orangeCF, orangeTrans, orangeScale, orangeRot;
 var grapeCF, grapeTrans, grapeScale, grapeRot;
 var appleCF, appleTrans, appleScale, appleRot;
 var watermelonCF, watermelonTrans, watermelonScale, watermelonRot;
+var bombCF, bombTrans, bombScale, bombRot;
 var translateZpos, translateZneg, rotateYpos, rotateYneg;
-var myGrape, myOrange, myApple, myWatermelon;
+var myGrape, myOrange, myApple, myWatermelon, myBomb;
 var rotateCount, lastRotation;
+var timerId;
 
 var raycaster = new THREE.Raycaster();
 var mouse = new THREE.Vector2();
 
-var clickedGrape, clickedApple, clickedWatermelon, clickedOrange;
+var clickedGrape, clickedApple, clickedWatermelon, clickedOrange, clickedBomb;
 
 init();
 
@@ -36,9 +38,10 @@ let elem = document.getElementById('timer');
 function init() {
     rotateCount = 0;
     lastRotation = [0, 0, 0, 0];
-    const orangeRadius = 15;
-    const grapeRadius = 8;
-    const watermelonRadius = 25;
+    const orangeRadius = 12;
+    const grapeRadius = 10;
+    const watermelonRadius = 15;
+    const bombRadius = 12;
 
     translateZneg = new THREE.Matrix4().makeTranslation(0, 0, -5);
     translateZpos = new THREE.Matrix4().makeTranslation(0, 0, 5);
@@ -55,6 +58,8 @@ function init() {
     scene.add(myApple);
     myWatermelon = new Watermelon(watermelonRadius);
     scene.add(myWatermelon);
+    myBomb = new Bomb(bombRadius);
+    scene.add(myBomb);
 
 
     const woodTex = new THREE.TextureLoader().load("textures/wood.jpeg");
@@ -66,7 +71,7 @@ function init() {
         new THREE.MeshPhongMaterial({ map: woodTex})
     );
     ground.translateZ(-300);
-    //scene.add(ground); //commented for now to debug clicking on fruits
+    scene.add(ground); //commented for now to debug clicking on fruits
 
     const lightOne = new THREE.DirectionalLight(0xFFFFFF, 1.0);
     lightOne.position.set(10, -50, 100);
@@ -108,17 +113,23 @@ function init() {
     watermelonScale = new THREE.Vector3();
     watermelonRot = new THREE.Quaternion();
 
+    bombCF = new THREE.Matrix4();
+    bombTrans = new THREE.Vector3();
+    bombScale = new THREE.Vector3();
+    bombRot = new THREE.Quaternion();
+
     /* Placing transforming objects for development purposes */
-    grapeCF.multiply(new THREE.Matrix4().makeTranslation(-25, 0, 0));
-    appleCF.multiply(new THREE.Matrix4().makeTranslation(75, 0, 0));
-    watermelonCF.multiply(new THREE.Matrix4().makeTranslation(-75, 0, 0));
-    orangeCF.multiply(new THREE.Matrix4().makeTranslation(25, 0, 0));
+    grapeCF.multiply(new THREE.Matrix4().makeTranslation(-30, 0, 0));
+    appleCF.multiply(new THREE.Matrix4().makeTranslation(85, 0, 0));
+    watermelonCF.multiply(new THREE.Matrix4().makeTranslation(-85, 0, 0));
+    orangeCF.multiply(new THREE.Matrix4().makeTranslation(30, 0, 0));
+    bombCF.multiply(new THREE.Matrix4().makeTranslation(0, 0, 0));
+
 
     /* I think the apple should be twice the original size */
     appleCF.multiply(new THREE.Matrix4().makeScale(2, 2, 2));
 
     window.addEventListener("keydown", keyboardHandler, false);
-    window.addEventListener("click", clickFruitEvent, false);
 
     renderer = new THREE.WebGLRenderer();
     renderer.setSize( window.innerWidth, window.innerHeight );
@@ -166,6 +177,16 @@ function animate() {
     myApple.scale.copy(appleScale);
 
 
+    if(clickedBomb)
+        bombCF.multiply(sendBackFruit);
+    bombCF.multiply(rotateObject[randomRotation(2)]);
+    bombCF.multiply(rotateObject[lastRotation[2]%2]);
+    bombCF.decompose(bombTrans, bombRot, bombScale);
+
+    myBomb.position.copy(bombTrans);
+    myBomb.quaternion.copy(bombRot);
+    myBomb.scale.copy(bombScale);
+
     //watermelon animation
     if(clickedWatermelon)
         watermelonCF.multiply(sendBackFruit);
@@ -208,31 +229,50 @@ function clickFruitEvent(event){
     mouse.y = -(event.clientY/window.innerHeight)*2 + 1;
 
     raycaster.setFromCamera(mouse, camera);
-    clickedOrange = clickedApple = clickedGrape = clickedWatermelon = false;
+    clickedOrange = clickedApple = clickedGrape = clickedWatermelon = clickedBomb = false;
 
-    let intersects = raycaster.intersectObjects(scene.children, true)
-    for(let i = 0; i < intersects.length; i++) {
-        if (intersects[i].object.parent == myOrange) {
-            clickedOrange = true;
+        let intersects = raycaster.intersectObjects(scene.children, true);
+        for (let i = 0; i < intersects.length; i++) {
+            if (intersects[i].object.parent == myOrange) {
+                clickedOrange = true;
+                score++;
+                document.getElementById('score').innerHTML = "Score: " + score;
+            }
+            if (intersects[i].object.parent == myApple) {
+                clickedApple = true;
+                score++;
+                document.getElementById('score').innerHTML = "Score: " + score;
+            }
+            if (intersects[i].object.parent == myWatermelon) {
+                clickedWatermelon = true;
+                score++;
+                document.getElementById('score').innerHTML = "Score: " + score;
+            }
+            if (intersects[i].object.parent == myGrape) {
+                clickedGrape = true;
+                score++;
+                document.getElementById('score').innerHTML = "Score: " + score;
+            }
+            if (intersects[i].object.parent == myBomb) {
+                clickedBomb = true;
+                score--;
+                document.getElementById('score').innerHTML = "Score: " + score;
+            }
         }
-        if (intersects[i].object.parent == myApple) {
-            clickedApple = true;
-        }
-        if (intersects[i].object.parent == myWatermelon) {
-            clickedWatermelon = true;
-        }
-        if (intersects[i].object.parent == myGrape) {
-            clickedGrape = true;
-        }
-    }
-
 }
+
+function startTimer(){
+    timerId = setInterval(countdown, 1000);
+    window.addEventListener("click", clickFruitEvent, false);
+}
+
 
 function countdown() {
     if (timeLeft == 0) {
         elem.innerHTML = "Time's up!";
         try {
             clearTimeout(timerId);
+            window.removeEventListener("click", clickFruitEvent, false);
         } catch (Exception) {
             //remove from logger the exception when time is up
         }
@@ -244,10 +284,6 @@ function countdown() {
         elem.innerHTML = '0:0' + timeLeft;
         timeLeft--;
     }
-}
-
-function startTimer(){
-    let timerId = setInterval(countdown, 1000);
 }
 
 //function to choose initial X or Y direction of spin on fruit
