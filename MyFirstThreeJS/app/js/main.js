@@ -39,7 +39,7 @@ function init() {
     rotateCount = 0;
     lastRotation = [0, 0, 0, 0];
     const orangeRadius = 12;
-    const grapeRadius = 10;
+    const grapeRadius = 12;
     const watermelonRadius = 15;
     const bombRadius = 12;
 
@@ -235,6 +235,8 @@ function clickFruitEvent(event){
         for (let i = 0; i < intersects.length; i++) {
             if (intersects[i].object.parent == myOrange) {
                 clickedOrange = true;
+                //can remove when clicked
+                //scene.remove(myOrange);
                 score++;
                 document.getElementById('score').innerHTML = "Score: " + score;
             }
@@ -262,6 +264,14 @@ function clickFruitEvent(event){
 }
 
 function startTimer(){
+    timerId = setInterval(countdown, 1000);
+    window.addEventListener("click", clickFruitEvent, false);
+}
+
+function resetTimer(){
+    timeLeft = 30;
+    score = 0;
+    document.getElementById('score').innerHTML = "Score: " + score;
     timerId = setInterval(countdown, 1000);
     window.addEventListener("click", clickFruitEvent, false);
 }
