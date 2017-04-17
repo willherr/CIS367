@@ -278,7 +278,7 @@ function resetTimer(){
 
 
 function countdown() {
-    if (timeLeft == 0) {
+    if (timeLeft <= 0) {
         elem.innerHTML = "Time's up!";
         try {
             clearTimeout(timerId);
