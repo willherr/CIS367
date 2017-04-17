@@ -61,13 +61,12 @@ function init() {
     myBomb = new Bomb(bombRadius);
     scene.add(myBomb);
 
-
     const woodTex = new THREE.TextureLoader().load("textures/wood.jpeg");
     woodTex.repeat.set(2,2);     // repeat the texture 6x in both s- and t- directions
     woodTex.wrapS = THREE.RepeatWrapping;
     woodTex.wrapT = THREE.RepeatWrapping;
     const ground = new THREE.Mesh (
-        new THREE.PlaneGeometry(3500, 4000),
+        new THREE.PlaneGeometry(4000, 3000),
         new THREE.MeshPhongMaterial({ map: woodTex})
     );
     ground.translateZ(-300);
@@ -77,7 +76,7 @@ function init() {
     lightOne.position.set(10, -50, 100);
     scene.add (lightOne); //remember to add the light to the scene
 
-    camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 10000 );
+    camera = new THREE.PerspectiveCamera( 90, window.innerWidth / window.innerHeight, 1, 10000 );
     camera.position.z = 1000;
 
     const eyePos = new THREE.Vector3 (0, -100, 40);
@@ -258,6 +257,7 @@ function clickFruitEvent(event){
             if (intersects[i].object.parent == myBomb) {
                 clickedBomb = true;
                 score--;
+                timeLeft = timeLeft - 5;
                 document.getElementById('score').innerHTML = "Score: " + score;
             }
         }
