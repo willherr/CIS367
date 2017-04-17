@@ -119,10 +119,10 @@ function init() {
     bombRot = new THREE.Quaternion();
 
     /* Placing transforming objects for development purposes */
-    grapeCF.multiply(new THREE.Matrix4().makeTranslation(-30, 0, 0));
-    appleCF.multiply(new THREE.Matrix4().makeTranslation(85, 0, 0));
-    watermelonCF.multiply(new THREE.Matrix4().makeTranslation(-85, 0, 0));
-    orangeCF.multiply(new THREE.Matrix4().makeTranslation(30, 0, 0));
+    grapeCF.multiply(new THREE.Matrix4().makeTranslation(50, 0, 0));
+    appleCF.multiply(new THREE.Matrix4().makeTranslation(100, 0, 0));
+    watermelonCF.multiply(new THREE.Matrix4().makeTranslation(-100, 0, 0));
+    orangeCF.multiply(new THREE.Matrix4().makeTranslation(-50, 0, 0));
     bombCF.multiply(new THREE.Matrix4().makeTranslation(0, 0, 0));
 
 
