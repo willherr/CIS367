@@ -403,16 +403,6 @@ function resetTimer(){
     score = 0;
     document.getElementById('score').innerHTML = "Score: " + score;
     timerId = setInterval(countdown, 1000);
-    scene.remove(myGrape);
-    scene.remove(myOrange);
-    scene.remove(myWatermelon);
-    scene.remove(myApple);
-    scene.remove(myBomb);
-    setTimeout(spawnOrange, 1500);
-    setTimeout(spawnBomb, 1500);
-    setTimeout(spawnGrape, 1500);
-    setTimeout(spawnApple, 1500);
-    setTimeout(spawnWatermelon, 1500);
 
     window.addEventListener("click", clickFruitEvent, false);
 }
