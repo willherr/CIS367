@@ -79,7 +79,7 @@ function init() {
     camera = new THREE.PerspectiveCamera( 90, window.innerWidth / window.innerHeight, 1, 10000 );
     camera.position.z = 1000;
 
-    const eyePos = new THREE.Vector3 (0, -100, 40);
+    const eyePos = new THREE.Vector3 (0, -140, 75);
     const cameraPose = new THREE.Matrix4().lookAt (
         eyePos,
         new THREE.Vector3 (0, 0, 0),
@@ -118,15 +118,19 @@ function init() {
     bombRot = new THREE.Quaternion();
 
     /* Placing transforming objects for development purposes */
-    grapeCF.multiply(new THREE.Matrix4().makeTranslation(50, 0, 0));
-    appleCF.multiply(new THREE.Matrix4().makeTranslation(100, 0, 0));
-    watermelonCF.multiply(new THREE.Matrix4().makeTranslation(-100, 0, 0));
-    orangeCF.multiply(new THREE.Matrix4().makeTranslation(-50, 0, 0));
-    bombCF.multiply(new THREE.Matrix4().makeTranslation(0, 0, 0));
-
+    let zGrapePos = Math.random() * (20 - (-20)) + (-20); //-40 to 75
+    let zApplePos = Math.random() * (20 - (-20)) + (-20); //-40 to 75
+    let zWaterPos = Math.random() * (20 - (-20)) + (-20); //-40 to 75
+    let zOrangePos = Math.random() * (20 - (-20)) + (-20); //-40 to 75
+    let zBombPos = Math.random() * (20 - (-20)) + (-20); //-40 to 75
+    grapeCF.multiply(new THREE.Matrix4().makeTranslation(-100, 0, zGrapePos));
+    appleCF.multiply(new THREE.Matrix4().makeTranslation(-50, 0, zApplePos));
+    watermelonCF.multiply(new THREE.Matrix4().makeTranslation(0, 0, zWaterPos));
+    orangeCF.multiply(new THREE.Matrix4().makeTranslation(50, 0, zOrangePos));
+    bombCF.multiply(new THREE.Matrix4().makeTranslation(100, 0, zBombPos));
 
     /* I think the apple should be twice the original size */
-    appleCF.multiply(new THREE.Matrix4().makeScale(2, 2, 2));
+    appleCF.multiply(new THREE.Matrix4().makeScale(1.5, 1.5, 1.5));
 
     window.addEventListener("keydown", keyboardHandler, false);
 
@@ -142,7 +146,7 @@ function animate() {
     //first multiply chooses the X or Y direction the fruit should spin
     //second multiply makes the fruit spin on its Z axis either positively or negatively at the same time
     if(clickedOrange)
-        orangeCF.multiply(sendBackFruit);//Doesn't do what we want for game, used for debugging
+        //orangeCF.multiply(sendBackFruit);//Doesn't do what we want for game, used for debugging
     orangeCF.multiply(rotateObject[randomRotation(0)]);
     orangeCF.multiply(rotateObject[lastRotation[0]%2]);
     orangeCF.decompose(orangeTrans, orangeRot, orangeScale);
@@ -154,7 +158,7 @@ function animate() {
 
     //grape animation
     if(clickedGrape)
-        grapeCF.multiply(sendBackFruit);
+        //grapeCF.multiply(sendBackFruit);
     grapeCF.multiply(rotateObject[randomRotation(1)]);
     grapeCF.multiply(rotateObject[lastRotation[1]%2]);
     grapeCF.decompose(grapeTrans, grapeRot, grapeScale);
@@ -163,10 +167,9 @@ function animate() {
     myGrape.quaternion.copy(grapeRot);
     myGrape.scale.copy(grapeScale);
 
-
     //apple animation
     if(clickedApple)
-        appleCF.multiply(sendBackFruit);
+        //appleCF.multiply(sendBackFruit);
     appleCF.multiply(rotateObject[randomRotation(2)]);
     appleCF.multiply(rotateObject[lastRotation[2]%2]);
     appleCF.decompose(appleTrans, appleRot, appleScale);
@@ -177,7 +180,7 @@ function animate() {
 
 
     if(clickedBomb)
-        bombCF.multiply(sendBackFruit);
+        //bombCF.multiply(sendBackFruit);
     bombCF.multiply(rotateObject[randomRotation(2)]);
     bombCF.multiply(rotateObject[lastRotation[2]%2]);
     bombCF.decompose(bombTrans, bombRot, bombScale);
@@ -188,7 +191,7 @@ function animate() {
 
     //watermelon animation
     if(clickedWatermelon)
-        watermelonCF.multiply(sendBackFruit);
+        //watermelonCF.multiply(sendBackFruit);
     watermelonCF.multiply(rotateObject[randomRotation(3)]);
     watermelonCF.multiply(rotateObject[lastRotation[3]%2]);
     watermelonCF.decompose(watermelonTrans, watermelonRot, watermelonScale);
@@ -222,6 +225,123 @@ function keyboardHandler(event){
      }
 }
 
+function spawnOrange(){
+    scene.add(myOrange);
+
+    scene.updateMatrixWorld(true);
+    let position = new THREE.Vector3();
+    position.getPositionFromMatrix( myOrange.matrixWorld );
+    //alert(position.x + ',' + position.y + ',' + position.z);
+
+    let xPos = Math.random() * (100 - (-100)) + (-100); //-150 to 150
+    let zPos = Math.random() * (60 - (-30)) + (-30); //-40 to 75
+    myOrange.position.set(0, 0, 0);
+
+    if(position.x < -100 || position.x > 100){
+        position.x = 10;
+        //alert("Changed: " + position.x + ',' + position.y + ',' + position.z);
+    }
+    if(position.z < -30 || position.z > 60){
+        position.z = 15;
+        //alert("Changed: " + position.x + ',' + position.y + ',' + position.z);
+    }
+
+    orangeCF.multiply(new THREE.Matrix4().makeTranslation(xPos, 0, zPos));
+}
+
+function spawnApple(){
+    scene.add(myApple);
+
+    scene.updateMatrixWorld(true);
+    let position = new THREE.Vector3();
+    position.getPositionFromMatrix( myApple.matrixWorld );
+    //alert(position.x + ',' + position.y + ',' + position.z);
+
+    let xPos = Math.random() * (100 - (-100)) + (-100); //-150 to 150
+    let zPos = Math.random() * (60 - (-30)) + (-30); //-40 to 75
+    myApple.position.set(-50, 0, 0);
+
+    if(position.x < -100 || position.x > 100){
+        position.x = xPos;
+        //alert("Changed: " + position.x + ',' + position.y + ',' + position.z);
+    }
+
+    if(position.z < -30 || position.z > 60){
+        position.z = 15;
+        //alert("Changed: " + position.x + ',' + position.y + ',' + position.z);
+    }
+    appleCF.multiply(new THREE.Matrix4().makeTranslation(xPos, 0, zPos));
+}
+
+function spawnWatermelon(){
+    scene.add(myWatermelon);
+    scene.updateMatrixWorld(true);
+    let position = new THREE.Vector3();
+    position.getPositionFromMatrix( myWatermelon.matrixWorld );
+    //alert(position.x + ',' + position.y + ',' + position.z);
+
+    let xPos = Math.random() * (100 - (-100)) + (-100); //-150 to 150
+    let zPos = Math.random() * (60 - (-30)) + (-30); //-40 to 75
+    myWatermelon.position.set(-100, 0, 0);
+
+    if(position.x < -100 || position.x > 100){
+        position.x = xPos;
+        //alert("Changed: " + position.x + ',' + position.y + ',' + position.z);
+    }
+
+    if(position.z < -30 || position.z > 60){
+        position.z = zPos;
+        //alert("Changed: " + position.x + ',' + position.y + ',' + position.z);
+    }
+
+    watermelonCF.multiply(new THREE.Matrix4().makeTranslation(xPos, 0, zPos));
+}
+
+function spawnGrape(){
+    scene.add(myGrape);
+    scene.updateMatrixWorld(true);
+    let position = new THREE.Vector3();
+    position.getPositionFromMatrix( myGrape.matrixWorld );
+    //alert(position.x + ',' + position.y + ',' + position.z);
+
+    let xPos = Math.random() * (100 - (-100)) + (-100); //-150 to 150
+    let zPos = Math.random() * (60 - (-30)) + (-30); //-40 to 75
+    myGrape.position.set(50, 0, 0);
+
+    if(position.x < -100 || position.x > 100){
+        position.x = xPos;
+        //alert("Changed: " + position.x + ',' + position.y + ',' + position.z);
+    }
+    if(position.z < -30 || position.z > 60){
+        position.z = zPos;
+        //alert("Changed: " + position.x + ',' + position.y + ',' + position.z);
+    }
+
+    grapeCF.multiply(new THREE.Matrix4().makeTranslation(xPos, 0, zPos));
+}
+
+function spawnBomb(){
+    scene.add(myBomb);
+
+    scene.updateMatrixWorld(true);
+    let position = new THREE.Vector3();
+    position.getPositionFromMatrix( myBomb.matrixWorld );
+    //alert(position.x + ',' + position.y + ',' + position.z);
+
+    let xPos = Math.random() * (100 - (-100)) + (-100); //-150 to 150
+    let zPos = Math.random() * (60 - (-30)) + (-30); //-40 to 75
+    myBomb.position.set(100, 0, 0);
+
+    if(position.x < -100 || position.x > 100){
+        position.x = xPos;
+        //alert("Changed: " + position.x + ',' + position.y + ',' + position.z);
+    }
+    if(position.z < -30 || position.z > 60){
+        position.z = zPos;
+        //alert("Changed: " + position.x + ',' + position.y + ',' + position.z);
+    }
+    bombCF.multiply(new THREE.Matrix4().makeTranslation(xPos, 0, zPos));
+}
 //doesn't work currently if you move camera
 function clickFruitEvent(event){
     mouse.x = (event.clientX/window.innerWidth)*2 - 1;
@@ -231,34 +351,44 @@ function clickFruitEvent(event){
     clickedOrange = clickedApple = clickedGrape = clickedWatermelon = clickedBomb = false;
 
         let intersects = raycaster.intersectObjects(scene.children, true);
+        let timeInterval = Math.random() * (1700 - 300) + 300;
         for (let i = 0; i < intersects.length; i++) {
             if (intersects[i].object.parent == myOrange) {
                 clickedOrange = true;
                 //can remove when clicked
-                //scene.remove(myOrange);
+                scene.remove(myOrange);
                 score++;
                 document.getElementById('score').innerHTML = "Score: " + score;
+                setTimeout(spawnOrange, timeInterval);
             }
             if (intersects[i].object.parent == myApple) {
                 clickedApple = true;
+                scene.remove(myApple);
                 score++;
                 document.getElementById('score').innerHTML = "Score: " + score;
+                setTimeout(spawnApple, timeInterval);
             }
             if (intersects[i].object.parent == myWatermelon) {
                 clickedWatermelon = true;
+                scene.remove(myWatermelon);
                 score++;
                 document.getElementById('score').innerHTML = "Score: " + score;
+                setTimeout(spawnWatermelon, timeInterval);
             }
             if (intersects[i].object.parent == myGrape) {
                 clickedGrape = true;
+                scene.remove(myGrape);
                 score++;
                 document.getElementById('score').innerHTML = "Score: " + score;
+                setTimeout(spawnGrape, timeInterval);
             }
             if (intersects[i].object.parent == myBomb) {
                 clickedBomb = true;
+                scene.remove(myBomb);
                 score--;
                 timeLeft = timeLeft - 5;
                 document.getElementById('score').innerHTML = "Score: " + score;
+                setTimeout(spawnBomb, timeInterval);
             }
         }
 }
@@ -273,6 +403,17 @@ function resetTimer(){
     score = 0;
     document.getElementById('score').innerHTML = "Score: " + score;
     timerId = setInterval(countdown, 1000);
+    scene.remove(myGrape);
+    scene.remove(myOrange);
+    scene.remove(myWatermelon);
+    scene.remove(myApple);
+    scene.remove(myBomb);
+    setTimeout(spawnOrange, 1500);
+    setTimeout(spawnBomb, 1500);
+    setTimeout(spawnGrape, 1500);
+    setTimeout(spawnApple, 1500);
+    setTimeout(spawnWatermelon, 1500);
+
     window.addEventListener("click", clickFruitEvent, false);
 }
 
