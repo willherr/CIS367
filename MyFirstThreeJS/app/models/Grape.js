@@ -3,7 +3,7 @@
  */
 class Grape {
     constructor (radius) { // orange radius
-        const grapeTex = new THREE.TextureLoader().load("textures/grape_fruit.jpg")
+        const grapeTex = new THREE.TextureLoader().load("textures/grape_fruit.jpg");
         //grapeTex.repeat.set(6,6);
         grapeTex.wrapS = THREE.RepeatWrapping;
         grapeTex.wrapT = THREE.RepeatWrapping;
